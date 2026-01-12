@@ -969,9 +969,9 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   currentTurnIconGradient: {
-    width: 112,
-    height: 112,
-    borderRadius: 56,
+    width: 224,
+    height: 224,
+    borderRadius: 112,
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#0EA5E9',
@@ -981,8 +981,8 @@ const styles = StyleSheet.create({
     elevation: 6,
   },
   currentTurnLogo: {
-    width: 72,
-    height: 72,
+    width: 144,
+    height: 144,
   },
   currentTurnName: {
     fontSize: 32,
