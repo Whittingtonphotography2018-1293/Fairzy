@@ -55,7 +55,8 @@ export default function Login() {
           />
         </View>
 
-        <Text style={styles.subtitle}>Welcome back! Sign in to continue</Text>
+        <Text style={styles.subtitle}>The fun, fair way to share life's turns</Text>
+        <Text style={styles.description}>Welcome back! Sign in to continue</Text>
 
         {error ? (
           <View style={styles.errorContainer}>
@@ -136,6 +137,13 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 16,
+    color: '#007AFF',
+    textAlign: 'center',
+    fontWeight: '600',
+    marginBottom: 8,
+  },
+  description: {
+    fontSize: 15,
     color: '#666666',
     textAlign: 'center',
     marginBottom: 32,

@@ -163,7 +163,7 @@ export default function Home() {
           style={styles.headerLogo}
           resizeMode="contain"
         />
-        <Text style={styles.headerSubtitle}>Track turns with elegance</Text>
+        <Text style={styles.headerSubtitle}>The fun, fair way to share life's turns</Text>
       </LinearGradient>
 
       {turnLists.length === 0 ? (
@@ -178,7 +178,7 @@ export default function Home() {
           </View>
           <Text style={styles.emptyTitle}>Welcome to Fairzy</Text>
           <Text style={styles.emptyText}>
-            Create your first turn list and never wonder whose turn it is again
+            For couples, families, and friends who care about balance and avoiding arguments. Make turn-taking smart, effortless, and surprisingly fun.
           </Text>
           <TouchableOpacity
             style={styles.emptyButton}

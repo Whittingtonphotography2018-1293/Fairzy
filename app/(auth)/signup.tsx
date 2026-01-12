@@ -71,7 +71,8 @@ export default function Signup() {
             />
           </View>
 
-          <Text style={styles.subtitle}>Create an account to start tracking turns</Text>
+          <Text style={styles.subtitle}>The fun, fair way to share life's turns</Text>
+          <Text style={styles.description}>Create an account to get started</Text>
 
           {error ? (
             <View style={styles.errorContainer}>
@@ -176,6 +177,13 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 16,
+    color: '#007AFF',
+    textAlign: 'center',
+    fontWeight: '600',
+    marginBottom: 8,
+  },
+  description: {
+    fontSize: 15,
     color: '#666666',
     textAlign: 'center',
     marginBottom: 32,
