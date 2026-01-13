@@ -158,11 +158,7 @@ export default function Home() {
         colors={['#FFFFFF', '#F8FBFF']}
         style={styles.header}
       >
-        <Image
-          source={require('@/assets/images/generated-image-1767367222181.png')}
-          style={styles.headerLogo}
-          resizeMode="contain"
-        />
+        <Text style={styles.headerTitle}>FAIRZY</Text>
         <Text style={styles.headerSubtitle}>The fun, fair way to share life's turns</Text>
       </LinearGradient>
 
@@ -318,9 +314,12 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 2,
   },
-  headerLogo: {
-    width: 380,
-    height: 110,
+  headerTitle: {
+    fontFamily: 'PlayfairDisplay-Bold',
+    fontSize: 48,
+    color: '#0F172A',
+    letterSpacing: 2,
+    marginBottom: 4,
   },
   headerSubtitle: {
     fontSize: 15,
