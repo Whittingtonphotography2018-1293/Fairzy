@@ -482,16 +482,16 @@ export default function TurnListDetail() {
           <>
             <View style={styles.currentTurnCard}>
               <LinearGradient
-                colors={['#F0F9FF', '#E0F2FE']}
+                colors={['#F0F7FF', '#E5F2FF']}
                 style={styles.currentTurnGradient}
               >
                 <View style={styles.currentTurnLabelContainer}>
-                  <Sparkles size={16} color="#0EA5E9" strokeWidth={2.5} />
+                  <Sparkles size={16} color="#007AFF" strokeWidth={2.5} />
                   <Text style={styles.currentTurnLabel}>Current Turn</Text>
                 </View>
                 <Animated.View style={[styles.currentTurnIconContainer, animatedStyle]}>
                   <LinearGradient
-                    colors={['#0EA5E9', '#0284C7', '#0369A1']}
+                    colors={['#007AFF', '#0051D5', '#0047B3']}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 1 }}
                     style={styles.currentTurnIconGradient}
@@ -507,13 +507,13 @@ export default function TurnListDetail() {
                 </Animated.View>
                 <View style={styles.sparkleDecorations}>
                   <View style={[styles.sparkleDecor, styles.sparkleDecor1]}>
-                    <Sparkles size={24} color="#0EA5E9" strokeWidth={2} />
+                    <Sparkles size={24} color="#007AFF" strokeWidth={2} />
                   </View>
                   <View style={[styles.sparkleDecor, styles.sparkleDecor2]}>
-                    <Sparkles size={20} color="#38BDF8" strokeWidth={2} />
+                    <Sparkles size={20} color="#3395FF" strokeWidth={2} />
                   </View>
                   <View style={[styles.sparkleDecor, styles.sparkleDecor3]}>
-                    <Sparkles size={18} color="#7DD3FC" strokeWidth={2} />
+                    <Sparkles size={18} color="#66AAFF" strokeWidth={2} />
                   </View>
                 </View>
                 <TouchableOpacity
@@ -523,7 +523,7 @@ export default function TurnListDetail() {
                   activeOpacity={0.8}
                 >
                   <LinearGradient
-                    colors={['#0EA5E9', '#0284C7']}
+                    colors={['#007AFF', '#0051D5']}
                     style={styles.advanceButtonGradient}
                   >
                     {advancing ? (
@@ -616,15 +616,21 @@ export default function TurnListDetail() {
                       style={[styles.addTimerButton, enablingTimer && styles.buttonDisabled]}
                       onPress={handleEnableTimer}
                       disabled={enablingTimer}
+                      activeOpacity={0.8}
                     >
-                      {enablingTimer ? (
-                        <ActivityIndicator color="#FFFFFF" size="small" />
-                      ) : (
-                        <>
-                          <Timer size={18} color="#FFFFFF" strokeWidth={2.5} />
-                          <Text style={styles.addTimerButtonText}>Enable Timer</Text>
-                        </>
-                      )}
+                      <LinearGradient
+                        colors={['#007AFF', '#0051D5']}
+                        style={styles.addTimerButtonGradient}
+                      >
+                        {enablingTimer ? (
+                          <ActivityIndicator color="#FFFFFF" size="small" />
+                        ) : (
+                          <>
+                            <Timer size={18} color="#FFFFFF" strokeWidth={2.5} />
+                            <Text style={styles.addTimerButtonText}>Enable Timer</Text>
+                          </>
+                        )}
+                      </LinearGradient>
                     </TouchableOpacity>
                   </LinearGradient>
                 </View>
@@ -1007,7 +1013,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     borderRadius: 24,
     overflow: 'hidden',
-    shadowColor: '#0EA5E9',
+    shadowColor: '#007AFF',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.15,
     shadowRadius: 20,
@@ -1026,7 +1032,7 @@ const styles = StyleSheet.create({
   currentTurnLabel: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#0EA5E9',
+    color: '#007AFF',
     textTransform: 'uppercase',
     letterSpacing: 1.5,
   },
@@ -1039,7 +1045,7 @@ const styles = StyleSheet.create({
     borderRadius: 140,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#0EA5E9',
+    shadowColor: '#007AFF',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.4,
     shadowRadius: 20,
@@ -1069,14 +1075,14 @@ const styles = StyleSheet.create({
     height: 220,
     borderRadius: 110,
     borderWidth: 2,
-    borderColor: '#BAE6FD',
+    borderColor: '#B3D9FF',
     borderStyle: 'dashed',
   },
   decorativeRingSecond: {
     width: 240,
     height: 240,
     borderRadius: 120,
-    borderColor: '#E0F2FE',
+    borderColor: '#E5F3FF',
     borderWidth: 1.5,
   },
   sparkleDecorations: {
@@ -1102,7 +1108,7 @@ const styles = StyleSheet.create({
   },
   advanceButton: {
     borderRadius: 16,
-    shadowColor: '#0EA5E9',
+    shadowColor: '#007AFF',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 12,
@@ -1295,18 +1301,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   addTimerButton: {
+    borderRadius: 14,
+    shadowColor: '#007AFF',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  addTimerButtonGradient: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    backgroundColor: '#0EA5E9',
     paddingHorizontal: 24,
     paddingVertical: 14,
-    borderRadius: 12,
-    shadowColor: '#0EA5E9',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 4,
+    borderRadius: 14,
   },
   addTimerButtonText: {
     color: '#FFFFFF',
@@ -1367,7 +1375,7 @@ const styles = StyleSheet.create({
     color: '#64748B',
   },
   editButtonTextActive: {
-    color: '#0EA5E9',
+    color: '#007AFF',
   },
   membersContainer: {
     gap: 12,
@@ -1383,10 +1391,10 @@ const styles = StyleSheet.create({
     borderColor: 'transparent',
   },
   memberCardActive: {
-    backgroundColor: '#F0F9FF',
+    backgroundColor: '#F0F7FF',
     borderWidth: 2,
-    borderColor: '#0EA5E9',
-    shadowColor: '#0EA5E9',
+    borderColor: '#007AFF',
+    shadowColor: '#007AFF',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -1413,7 +1421,7 @@ const styles = StyleSheet.create({
   },
   memberNameActive: {
     fontWeight: '700',
-    color: '#0EA5E9',
+    color: '#007AFF',
   },
   deleteMemberButton: {
     padding: 8,
