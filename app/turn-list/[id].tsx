@@ -51,6 +51,7 @@ interface TurnList {
   id: string;
   name: string;
   category: string;
+  timer_enabled: boolean;
 }
 
 interface Member {
@@ -113,6 +114,7 @@ export default function TurnListDetail() {
   const [deleteListModalVisible, setDeleteListModalVisible] = useState(false);
   const [deleteMemberModalVisible, setDeleteMemberModalVisible] = useState(false);
   const [memberToDelete, setMemberToDelete] = useState<string | null>(null);
+  const [enablingTimer, setEnablingTimer] = useState(false);
 
   const [timerSeconds, setTimerSeconds] = useState(0);
   const [isTimerRunning, setIsTimerRunning] = useState(false);
@@ -396,6 +398,25 @@ export default function TurnListDetail() {
     setTimerModalVisible(true);
   };
 
+  const handleEnableTimer = async () => {
+    setEnablingTimer(true);
+    try {
+      const { error } = await supabase
+        .from('turn_lists')
+        .update({ timer_enabled: true })
+        .eq('id', id);
+
+      if (error) throw error;
+
+      await loadData();
+    } catch (error: any) {
+      console.error('Error enabling timer:', error);
+      Alert.alert('Error', 'Failed to enable timer');
+    } finally {
+      setEnablingTimer(false);
+    }
+  };
+
   if (loading) {
     return (
       <View style={styles.centerContainer}>
@@ -507,64 +528,97 @@ export default function TurnListDetail() {
               </LinearGradient>
             </View>
 
-            <View style={styles.timerSection}>
-              <View style={styles.timerHeader}>
-                <View style={styles.timerTitleRow}>
-                  <Timer size={20} color="#000000" />
-                  <Text style={styles.timerTitle}>Turn Timer</Text>
+            {turnList.timer_enabled ? (
+              <View style={styles.timerSection}>
+                <View style={styles.timerHeader}>
+                  <View style={styles.timerTitleRow}>
+                    <Timer size={20} color="#000000" />
+                    <Text style={styles.timerTitle}>Turn Timer</Text>
+                  </View>
+                  <TouchableOpacity onPress={openTimerSettings} style={styles.timerSettingsButton}>
+                    <Settings size={20} color="#666666" />
+                  </TouchableOpacity>
                 </View>
-                <TouchableOpacity onPress={openTimerSettings} style={styles.timerSettingsButton}>
-                  <Settings size={20} color="#666666" />
-                </TouchableOpacity>
-              </View>
 
-              <Animated.View style={[styles.timerDisplay, timerEnded && styles.timerDisplayEnded, pulseAnimatedStyle]}>
-                <View style={styles.timerProgressBg}>
-                  <View style={[styles.timerProgressFill, { width: `${timerProgress * 100}%` }]} />
-                </View>
-                <View style={styles.timerContent}>
-                  {timerEnded && (
-                    <View style={styles.timerEndedBadge}>
-                      <Bell size={16} color="#FFFFFF" />
-                      <Text style={styles.timerEndedText}>Time's Up!</Text>
-                    </View>
+                <Animated.View style={[styles.timerDisplay, timerEnded && styles.timerDisplayEnded, pulseAnimatedStyle]}>
+                  <View style={styles.timerProgressBg}>
+                    <View style={[styles.timerProgressFill, { width: `${timerProgress * 100}%` }]} />
+                  </View>
+                  <View style={styles.timerContent}>
+                    {timerEnded && (
+                      <View style={styles.timerEndedBadge}>
+                        <Bell size={16} color="#FFFFFF" />
+                        <Text style={styles.timerEndedText}>Time's Up!</Text>
+                      </View>
+                    )}
+                    <Text style={[styles.timerText, timerEnded && styles.timerTextEnded]}>
+                      {formatTime(timerSeconds)}
+                    </Text>
+                    <Text style={styles.timerDurationText}>
+                      of {formatTime(timerDuration)}
+                    </Text>
+                  </View>
+                </Animated.View>
+
+                <View style={styles.timerControls}>
+                  {!isTimerRunning ? (
+                    <TouchableOpacity
+                      style={[styles.timerButton, styles.timerButtonStart]}
+                      onPress={handleStartTimer}
+                    >
+                      <Play size={20} color="#FFFFFF" />
+                      <Text style={styles.timerButtonText}>Start</Text>
+                    </TouchableOpacity>
+                  ) : (
+                    <TouchableOpacity
+                      style={[styles.timerButton, styles.timerButtonPause]}
+                      onPress={handlePauseTimer}
+                    >
+                      <Pause size={20} color="#FFFFFF" />
+                      <Text style={styles.timerButtonText}>Pause</Text>
+                    </TouchableOpacity>
                   )}
-                  <Text style={[styles.timerText, timerEnded && styles.timerTextEnded]}>
-                    {formatTime(timerSeconds)}
-                  </Text>
-                  <Text style={styles.timerDurationText}>
-                    of {formatTime(timerDuration)}
-                  </Text>
+                  <TouchableOpacity
+                    style={[styles.timerButton, styles.timerButtonReset]}
+                    onPress={handleResetTimer}
+                  >
+                    <RotateCcw size={20} color="#666666" />
+                    <Text style={styles.timerButtonTextSecondary}>Reset</Text>
+                  </TouchableOpacity>
                 </View>
-              </Animated.View>
-
-              <View style={styles.timerControls}>
-                {!isTimerRunning ? (
-                  <TouchableOpacity
-                    style={[styles.timerButton, styles.timerButtonStart]}
-                    onPress={handleStartTimer}
-                  >
-                    <Play size={20} color="#FFFFFF" />
-                    <Text style={styles.timerButtonText}>Start</Text>
-                  </TouchableOpacity>
-                ) : (
-                  <TouchableOpacity
-                    style={[styles.timerButton, styles.timerButtonPause]}
-                    onPress={handlePauseTimer}
-                  >
-                    <Pause size={20} color="#FFFFFF" />
-                    <Text style={styles.timerButtonText}>Pause</Text>
-                  </TouchableOpacity>
-                )}
-                <TouchableOpacity
-                  style={[styles.timerButton, styles.timerButtonReset]}
-                  onPress={handleResetTimer}
-                >
-                  <RotateCcw size={20} color="#666666" />
-                  <Text style={styles.timerButtonTextSecondary}>Reset</Text>
-                </TouchableOpacity>
               </View>
-            </View>
+            ) : (
+              <View style={styles.addTimerSection}>
+                <View style={styles.addTimerCard}>
+                  <LinearGradient
+                    colors={['#F8FAFC', '#F1F5F9']}
+                    style={styles.addTimerGradient}
+                  >
+                    <View style={styles.addTimerIconContainer}>
+                      <Timer size={32} color="#64748B" strokeWidth={2} />
+                    </View>
+                    <Text style={styles.addTimerTitle}>Add Turn Timer</Text>
+                    <Text style={styles.addTimerDescription}>
+                      Set time limits for each turn and get notified when time's up
+                    </Text>
+                    <TouchableOpacity
+                      style={[styles.addTimerButton, enablingTimer && styles.buttonDisabled]}
+                      onPress={handleEnableTimer}
+                      disabled={enablingTimer}
+                    >
+                      {enablingTimer ? (
+                        <ActivityIndicator color="#FFFFFF" size="small" />
+                      ) : (
+                        <>
+                          <Timer size={18} color="#FFFFFF" strokeWidth={2.5} />
+                          <Text style={styles.addTimerButtonText}>Enable Timer</Text>
+                        </>
+                      )}
+                    </TouchableOpacity>
+                  </LinearGradient>
+                </View>
+              </View>
+            )}
 
             <View style={styles.section}>
               <View style={styles.membersHeader}>
@@ -1138,6 +1192,72 @@ const styles = StyleSheet.create({
     color: '#666666',
     fontSize: 16,
     fontWeight: '600',
+  },
+  addTimerSection: {
+    marginHorizontal: 20,
+    marginBottom: 20,
+  },
+  addTimerCard: {
+    borderRadius: 20,
+    overflow: 'hidden',
+    shadowColor: '#0F172A',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.06,
+    shadowRadius: 12,
+    elevation: 3,
+  },
+  addTimerGradient: {
+    padding: 32,
+    alignItems: 'center',
+  },
+  addTimerIconContainer: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: '#FFFFFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 20,
+    shadowColor: '#64748B',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  addTimerTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#0F172A',
+    marginBottom: 10,
+    letterSpacing: -0.3,
+  },
+  addTimerDescription: {
+    fontSize: 14,
+    color: '#64748B',
+    textAlign: 'center',
+    marginBottom: 24,
+    lineHeight: 20,
+    paddingHorizontal: 20,
+  },
+  addTimerButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    backgroundColor: '#0EA5E9',
+    paddingHorizontal: 24,
+    paddingVertical: 14,
+    borderRadius: 12,
+    shadowColor: '#0EA5E9',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  addTimerButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '700',
+    letterSpacing: 0.2,
   },
   section: {
     marginHorizontal: 20,

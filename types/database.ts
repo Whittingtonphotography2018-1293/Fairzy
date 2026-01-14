@@ -17,6 +17,7 @@ export type Database = {
           created_by: string
           created_at: string
           updated_at: string
+          timer_enabled: boolean
         }
         Insert: {
           id?: string
@@ -25,6 +26,7 @@ export type Database = {
           created_by: string
           created_at?: string
           updated_at?: string
+          timer_enabled?: boolean
         }
         Update: {
           id?: string
@@ -33,6 +35,7 @@ export type Database = {
           created_by?: string
           created_at?: string
           updated_at?: string
+          timer_enabled?: boolean
         }
         Relationships: [
           {
