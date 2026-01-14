@@ -2,7 +2,6 @@ import { View, Text, StyleSheet, TouchableOpacity, Alert, ScrollView } from 'rea
 import { LinearGradient } from 'expo-linear-gradient';
 import { useAuth } from '@/contexts/AuthContext';
 import { LogOut, Mail, User as UserIcon, Shield } from 'lucide-react-native';
-import FairnessTracker from '@/components/FairnessTracker';
 
 export default function Profile() {
   const { user, signOut } = useAuth();
@@ -61,10 +60,6 @@ export default function Profile() {
             <Shield size={14} color="#10B981" strokeWidth={2.5} />
             <Text style={styles.verifiedText}>Verified Account</Text>
           </View>
-        </View>
-
-        <View style={styles.fairnessSection}>
-          <FairnessTracker />
         </View>
 
         <View style={styles.section}>
@@ -189,9 +184,6 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: '#059669',
     fontWeight: '700',
-  },
-  fairnessSection: {
-    marginBottom: 24,
   },
   section: {
     backgroundColor: '#FFFFFF',
