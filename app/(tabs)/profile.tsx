@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, Alert, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useAuth } from '@/contexts/AuthContext';
 import { LogOut, Mail, User as UserIcon, Shield } from 'lucide-react-native';
@@ -7,24 +7,13 @@ export default function Profile() {
   const { user, signOut } = useAuth();
 
   const handleSignOut = async () => {
-    Alert.alert(
-      'Sign Out',
-      'Are you sure you want to sign out?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Sign Out',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await signOut();
-            } catch (error) {
-              Alert.alert('Error', 'Failed to sign out. Please try again.');
-            }
-          },
-        },
-      ]
-    );
+    try {
+      console.log('Sign out button clicked');
+      await signOut();
+      console.log('Sign out completed');
+    } catch (error) {
+      console.error('Sign out error:', error);
+    }
   };
 
   const displayName = user?.user_metadata?.display_name || 'User';
