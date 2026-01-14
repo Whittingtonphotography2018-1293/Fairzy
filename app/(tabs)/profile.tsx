@@ -1,13 +1,11 @@
 import { View, Text, StyleSheet, TouchableOpacity, Alert, ScrollView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useRouter } from 'expo-router';
 import { useAuth } from '@/contexts/AuthContext';
 import { LogOut, Mail, User as UserIcon, Shield } from 'lucide-react-native';
 import FairnessTracker from '@/components/FairnessTracker';
 
 export default function Profile() {
   const { user, signOut } = useAuth();
-  const router = useRouter();
 
   const handleSignOut = async () => {
     Alert.alert(
@@ -21,7 +19,6 @@ export default function Profile() {
           onPress: async () => {
             try {
               await signOut();
-              router.replace('/(auth)/login');
             } catch (error) {
               Alert.alert('Error', 'Failed to sign out. Please try again.');
             }

@@ -95,7 +95,7 @@ const playAlarmSound = () => {
 export default function TurnListDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [turnList, setTurnList] = useState<TurnList | null>(null);
   const [members, setMembers] = useState<Member[]>([]);
   const [history, setHistory] = useState<HistoryItem[]>([]);
@@ -140,8 +140,16 @@ export default function TurnListDetail() {
   });
 
   useEffect(() => {
-    loadData();
-  }, [id]);
+    if (!authLoading && !user) {
+      router.replace('/(auth)/login');
+    }
+  }, [user, authLoading]);
+
+  useEffect(() => {
+    if (user) {
+      loadData();
+    }
+  }, [id, user]);
 
   useEffect(() => {
     if (isTimerRunning && timerSeconds > 0) {
@@ -416,7 +424,7 @@ export default function TurnListDetail() {
     }
   };
 
-  if (loading) {
+  if (authLoading || loading || !user) {
     return (
       <View style={styles.centerContainer}>
         <ActivityIndicator size="large" color="#007AFF" />
