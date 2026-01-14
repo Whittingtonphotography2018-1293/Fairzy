@@ -1,7 +1,8 @@
-import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert, ScrollView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useAuth } from '@/contexts/AuthContext';
 import { LogOut, Mail, User as UserIcon, Shield } from 'lucide-react-native';
+import FairnessTracker from '@/components/FairnessTracker';
 
 export default function Profile() {
   const { user, signOut } = useAuth();
@@ -33,7 +34,11 @@ export default function Profile() {
         <Text style={styles.headerSubtitle}>Manage your account</Text>
       </LinearGradient>
 
-      <View style={styles.content}>
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
         <View style={styles.profileCard}>
           <LinearGradient
             colors={['#E3F2FD', '#BBDEFB']}
@@ -50,6 +55,10 @@ export default function Profile() {
             <Shield size={14} color="#10B981" strokeWidth={2.5} />
             <Text style={styles.verifiedText}>Verified Account</Text>
           </View>
+        </View>
+
+        <View style={styles.fairnessSection}>
+          <FairnessTracker />
         </View>
 
         <View style={styles.section}>
@@ -72,7 +81,7 @@ export default function Profile() {
           <Text style={styles.footerText}>Fairzy v1.0</Text>
           <Text style={styles.footerSubtext}>Track turns with elegance</Text>
         </View>
-      </View>
+      </ScrollView>
     </View>
   );
 }
@@ -105,9 +114,12 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     letterSpacing: 0.2,
   },
-  content: {
+  scrollView: {
     flex: 1,
+  },
+  scrollContent: {
     padding: 20,
+    paddingBottom: 40,
   },
   profileCard: {
     backgroundColor: '#FFFFFF',
@@ -172,6 +184,9 @@ const styles = StyleSheet.create({
     color: '#059669',
     fontWeight: '700',
   },
+  fairnessSection: {
+    marginBottom: 24,
+  },
   section: {
     backgroundColor: '#FFFFFF',
     borderRadius: 20,
@@ -216,10 +231,9 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   footer: {
-    flex: 1,
-    justifyContent: 'flex-end',
     alignItems: 'center',
-    paddingBottom: 24,
+    paddingTop: 32,
+    paddingBottom: 16,
   },
   footerText: {
     fontSize: 15,
