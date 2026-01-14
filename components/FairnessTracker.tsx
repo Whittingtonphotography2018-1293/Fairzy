@@ -64,15 +64,18 @@ export default function FairnessTracker() {
           headers: {
             'Authorization': `Bearer ${session.access_token}`,
             'Content-Type': 'application/json',
+            'apikey': process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || '',
           },
         }
       );
 
+      const result = await response.json();
+
       if (!response.ok) {
-        throw new Error('Failed to load fairness data');
+        console.error('Edge function error:', result);
+        throw new Error(result.error || 'Failed to load fairness data');
       }
 
-      const result = await response.json();
       setData(result);
     } catch (err: any) {
       setError(err.message || 'Failed to load fairness data');
