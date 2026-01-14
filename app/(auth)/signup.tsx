@@ -9,10 +9,10 @@ import {
   Platform,
   ActivityIndicator,
   ScrollView,
+  Image,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/contexts/AuthContext';
-import { RotateCcw } from 'lucide-react-native';
 
 export default function Signup() {
   const [displayName, setDisplayName] = useState('');
@@ -64,9 +64,11 @@ export default function Signup() {
       >
         <View style={styles.content}>
           <View style={styles.logoContainer}>
-            <View style={styles.logoCircle}>
-              <RotateCcw size={40} color="#FFFFFF" strokeWidth={2.5} />
-            </View>
+            <Image
+              source={require('@/assets/images/generated-image-1768414893142.png')}
+              style={styles.logo}
+              resizeMode="contain"
+            />
             <Text style={styles.logoText}>Fairzy</Text>
           </View>
 
@@ -163,19 +165,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 32,
   },
-  logoCircle: {
+  logo: {
     width: 80,
     height: 80,
-    borderRadius: 40,
-    backgroundColor: '#0EA5E9',
-    justifyContent: 'center',
-    alignItems: 'center',
     marginBottom: 12,
-    shadowColor: '#0EA5E9',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
-    elevation: 6,
   },
   logoText: {
     fontSize: 36,
