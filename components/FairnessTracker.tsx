@@ -36,7 +36,7 @@ export default function FairnessTracker() {
   const [refreshing, setRefreshing] = useState(false);
   const [data, setData] = useState<FairnessData | null>(null);
   const [error, setError] = useState('');
-  const { user } = useAuth();
+  const { user, session } = useAuth();
 
   useEffect(() => {
     loadFairnessData();
@@ -51,15 +51,18 @@ export default function FairnessTracker() {
     setError('');
 
     try {
+      if (!session?.access_token) {
+        throw new Error('Not authenticated');
+      }
+
       const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
-      const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
 
       const response = await fetch(
         `${supabaseUrl}/functions/v1/fairness-analysis`,
         {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${supabaseAnonKey}`,
+            'Authorization': `Bearer ${session.access_token}`,
             'Content-Type': 'application/json',
           },
         }
