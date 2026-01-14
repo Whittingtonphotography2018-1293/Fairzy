@@ -1,10 +1,12 @@
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useAuth } from '@/contexts/AuthContext';
-import { LogOut, Mail, User as UserIcon, Shield } from 'lucide-react-native';
+import { useRouter } from 'expo-router';
+import { LogOut, Mail, User as UserIcon, Shield, HelpCircle } from 'lucide-react-native';
 
 export default function Profile() {
   const { user, signOut } = useAuth();
+  const router = useRouter();
 
   const handleSignOut = async () => {
     try {
@@ -53,6 +55,19 @@ export default function Profile() {
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Account Actions</Text>
+          <TouchableOpacity
+            style={styles.supportButton}
+            onPress={() => router.push('/support')}
+            activeOpacity={0.7}
+          >
+            <View style={styles.buttonContent}>
+              <View style={styles.supportIconContainer}>
+                <HelpCircle size={22} color="#007AFF" strokeWidth={2.2} />
+              </View>
+              <Text style={styles.supportButtonText}>Support & Terms</Text>
+            </View>
+          </TouchableOpacity>
+
           <TouchableOpacity
             style={styles.button}
             onPress={handleSignOut}
@@ -191,6 +206,26 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     textTransform: 'uppercase',
     letterSpacing: 0.8,
+  },
+  supportButton: {
+    backgroundColor: '#EFF6FF',
+    borderRadius: 14,
+    borderWidth: 2,
+    borderColor: '#DBEAFE',
+    marginBottom: 12,
+  },
+  supportIconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    backgroundColor: '#FFFFFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  supportButtonText: {
+    fontSize: 17,
+    color: '#007AFF',
+    fontWeight: '700',
   },
   button: {
     backgroundColor: '#FEF2F2',

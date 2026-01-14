@@ -37,6 +37,7 @@ export default function RootLayout() {
         <Stack.Screen name="(auth)" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="turn-list/[id]" options={{ headerShown: false }} />
+        <Stack.Screen name="support" options={{ headerShown: true, title: 'Support & Terms' }} />
         <Stack.Screen name="+not-found" />
       </Stack>
       <StatusBar style="auto" />
