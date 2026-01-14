@@ -11,6 +11,7 @@ import {
   TextInput,
   KeyboardAvoidingView,
   Platform,
+  Image,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
@@ -241,6 +242,11 @@ export default function Home() {
         colors={['#FFFFFF', '#F8FBFF']}
         style={styles.header}
       >
+        <Image
+          source={require('@/assets/images/generated-image-1768414893142.png')}
+          style={styles.logo}
+          resizeMode="contain"
+        />
         <Text style={styles.headerTitle}>FAIRZY</Text>
         <Text style={styles.headerSubtitle}>The fun, fair way to share life's turns</Text>
       </LinearGradient>
@@ -248,12 +254,11 @@ export default function Home() {
       {turnLists.length === 0 ? (
         <View style={styles.emptyContainer}>
           <View style={styles.emptyIconWrapper}>
-            <LinearGradient
-              colors={['#E8F4FD', '#F0F9FF']}
-              style={styles.emptyIconBackground}
-            >
-              <Users size={80} color="#90CAF9" strokeWidth={1.5} />
-            </LinearGradient>
+            <Image
+              source={require('@/assets/images/generated-image-1768414893142.png')}
+              style={styles.emptyLogo}
+              resizeMode="contain"
+            />
           </View>
           <Text style={styles.emptyTitle}>Welcome to Fairzy</Text>
           <Text style={styles.emptyText}>
@@ -397,6 +402,11 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 2,
   },
+  logo: {
+    width: 80,
+    height: 80,
+    marginBottom: 16,
+  },
   headerTitle: {
     fontFamily: 'PlayfairDisplay-Bold',
     fontSize: 48,
@@ -505,6 +515,10 @@ const styles = StyleSheet.create({
   },
   emptyIconWrapper: {
     marginBottom: 32,
+  },
+  emptyLogo: {
+    width: 160,
+    height: 160,
   },
   emptyIconBackground: {
     width: 160,
