@@ -11,13 +11,27 @@ import {
   TextInput,
   KeyboardAvoidingView,
   Platform,
-  Image,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
-import { Plus, X, ChevronRight, Users } from 'lucide-react-native';
+import {
+  Plus,
+  X,
+  ChevronRight,
+  Users,
+  Coffee,
+  Utensils,
+  Car,
+  Home as HomeIcon,
+  ShoppingCart,
+  Calendar,
+  Baby,
+  Heart,
+  Briefcase,
+  Gamepad2,
+} from 'lucide-react-native';
 
 interface TurnList {
   id: string;
@@ -26,6 +40,74 @@ interface TurnList {
   created_at: string;
   member_count?: number;
 }
+
+// Generate unique gradient colors based on a string ID
+const generateGradientColors = (id: string): [string, string] => {
+  let hash = 0;
+  for (let i = 0; i < id.length; i++) {
+    hash = id.charCodeAt(i) + ((hash << 5) - hash);
+  }
+
+  const gradients: [string, string][] = [
+    ['#FFE5E5', '#FFB3BA'],
+    ['#E5F3FF', '#B3D9FF'],
+    ['#FFF5E5', '#FFE0B3'],
+    ['#E5FFE5', '#B3FFB3'],
+    ['#F5E5FF', '#E0B3FF'],
+    ['#FFE5F5', '#FFB3E0'],
+    ['#E5FFFF', '#B3FFFF'],
+    ['#FFF0E5', '#FFD4B3'],
+    ['#F0FFE5', '#D4FFB3'],
+    ['#FFE5EC', '#FFB3CC'],
+  ];
+
+  const index = Math.abs(hash) % gradients.length;
+  return gradients[index];
+};
+
+// Get icon based on category or list name
+const getListIcon = (category: string, name: string) => {
+  const lowerCategory = category.toLowerCase();
+  const lowerName = name.toLowerCase();
+
+  if (lowerCategory.includes('food') || lowerCategory.includes('dinner') ||
+      lowerName.includes('dinner') || lowerName.includes('food') || lowerName.includes('meal')) {
+    return Utensils;
+  }
+  if (lowerCategory.includes('coffee') || lowerName.includes('coffee')) {
+    return Coffee;
+  }
+  if (lowerCategory.includes('car') || lowerCategory.includes('drive') ||
+      lowerName.includes('driving') || lowerName.includes('car')) {
+    return Car;
+  }
+  if (lowerCategory.includes('chore') || lowerCategory.includes('clean') ||
+      lowerName.includes('chore') || lowerName.includes('clean')) {
+    return HomeIcon;
+  }
+  if (lowerCategory.includes('shop') || lowerName.includes('shop') || lowerName.includes('grocery')) {
+    return ShoppingCart;
+  }
+  if (lowerCategory.includes('schedule') || lowerCategory.includes('plan') ||
+      lowerName.includes('schedule')) {
+    return Calendar;
+  }
+  if (lowerCategory.includes('baby') || lowerCategory.includes('kid') ||
+      lowerName.includes('baby') || lowerName.includes('diaper')) {
+    return Baby;
+  }
+  if (lowerCategory.includes('date') || lowerName.includes('date')) {
+    return Heart;
+  }
+  if (lowerCategory.includes('work') || lowerName.includes('work')) {
+    return Briefcase;
+  }
+  if (lowerCategory.includes('game') || lowerName.includes('game')) {
+    return Gamepad2;
+  }
+
+  return Users;
+};
 
 export default function Home() {
   const [turnLists, setTurnLists] = useState<TurnList[]>([]);
@@ -112,37 +194,38 @@ export default function Home() {
     }
   };
 
-  const renderTurnList = ({ item }: { item: TurnList }) => (
-    <TouchableOpacity
-      style={styles.listCard}
-      onPress={() => router.push(`/turn-list/${item.id}`)}
-      activeOpacity={0.8}
-    >
-      <View style={styles.listCardInner}>
-        <View style={styles.listLeftContent}>
-          <LinearGradient
-            colors={['#E3F2FD', '#BBDEFB']}
-            style={styles.listIconContainer}
-          >
-            <Image
-              source={require('@/assets/images/generated-image-1767367222181.png')}
-              style={styles.listIcon}
-              resizeMode="contain"
-            />
-          </LinearGradient>
-          <View style={styles.listTextContent}>
-            <Text style={styles.listName}>{item.name}</Text>
-            {item.category ? (
-              <View style={styles.categoryBadge}>
-                <Text style={styles.listCategory}>{item.category}</Text>
-              </View>
-            ) : null}
+  const renderTurnList = ({ item }: { item: TurnList }) => {
+    const gradientColors = generateGradientColors(item.id);
+    const IconComponent = getListIcon(item.category || '', item.name);
+
+    return (
+      <TouchableOpacity
+        style={styles.listCard}
+        onPress={() => router.push(`/turn-list/${item.id}`)}
+        activeOpacity={0.8}
+      >
+        <View style={styles.listCardInner}>
+          <View style={styles.listLeftContent}>
+            <LinearGradient
+              colors={gradientColors}
+              style={styles.listIconContainer}
+            >
+              <IconComponent size={28} color="#FFFFFF" strokeWidth={2} />
+            </LinearGradient>
+            <View style={styles.listTextContent}>
+              <Text style={styles.listName}>{item.name}</Text>
+              {item.category ? (
+                <View style={styles.categoryBadge}>
+                  <Text style={styles.listCategory}>{item.category}</Text>
+                </View>
+              ) : null}
+            </View>
           </View>
+          <ChevronRight size={22} color="#999999" />
         </View>
-        <ChevronRight size={22} color="#999999" />
-      </View>
-    </TouchableOpacity>
-  );
+      </TouchableOpacity>
+    );
+  };
 
   if (loading) {
     return (
@@ -390,10 +473,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 2,
-  },
-  listIcon: {
-    width: 36,
-    height: 36,
   },
   listTextContent: {
     flex: 1,
