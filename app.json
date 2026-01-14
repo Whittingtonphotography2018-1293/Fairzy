@@ -4,17 +4,28 @@
     "slug": "fairzy",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/fairzy_app_icon_featuring_only_the_circular_arrow_symbol_from_the_fairzy_logo._use_a_gradient_background_blending_emerald_green_(#00c58e),_purple_(#7161ef),_and_yellow_(#ffd447)_with_smooth_transitions._keep.png",
+    "icon": "./assets/images/generated-image-1768414893142.png",
     "scheme": "fairzy",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/images/generated-image-1768414893142.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#000000"
+    },
     "ios": {
       "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/generated-image-1768414893142.png",
+        "backgroundColor": "#000000"
+      }
     },
     "web": {
       "bundler": "metro",
       "output": "single",
-      "favicon": "./assets/images/fairzy_app_icon_featuring_only_the_circular_arrow_symbol_from_the_fairzy_logo._use_a_gradient_background_blending_emerald_green_(#00c58e),_purple_(#7161ef),_and_yellow_(#ffd447)_with_smooth_transitions._keep.png"
+      "favicon": "./assets/images/generated-image-1768414893142.png"
     },
     "plugins": ["expo-router", "expo-font", "expo-web-browser"],
     "experiments": {
