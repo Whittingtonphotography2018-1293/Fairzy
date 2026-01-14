@@ -13,7 +13,6 @@ import {
   Platform,
   Alert,
   Vibration,
-  Image,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -492,19 +491,31 @@ export default function TurnListDetail() {
                 </View>
                 <Animated.View style={[styles.currentTurnIconContainer, animatedStyle]}>
                   <LinearGradient
-                    colors={['#E0F2FE', '#BAE6FD']}
+                    colors={['#0EA5E9', '#0284C7', '#0369A1']}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
                     style={styles.currentTurnIconGradient}
                   >
-                    <Image
-                      source={require('@/assets/images/generated-image-1767367222181.png')}
-                      style={styles.currentTurnLogo}
-                      resizeMode="contain"
-                    />
+                    <View style={styles.currentTurnCircleInner}>
+                      <Text style={styles.currentTurnNameInCircle}>
+                        {currentTurn?.display_name || 'Unknown'}
+                      </Text>
+                      <View style={styles.decorativeRing} />
+                      <View style={[styles.decorativeRing, styles.decorativeRingSecond]} />
+                    </View>
                   </LinearGradient>
                 </Animated.View>
-                <Text style={styles.currentTurnName}>
-                  {currentTurn?.display_name || 'Unknown'}
-                </Text>
+                <View style={styles.sparkleDecorations}>
+                  <View style={[styles.sparkleDecor, styles.sparkleDecor1]}>
+                    <Sparkles size={24} color="#0EA5E9" strokeWidth={2} />
+                  </View>
+                  <View style={[styles.sparkleDecor, styles.sparkleDecor2]}>
+                    <Sparkles size={20} color="#38BDF8" strokeWidth={2} />
+                  </View>
+                  <View style={[styles.sparkleDecor, styles.sparkleDecor3]}>
+                    <Sparkles size={18} color="#7DD3FC" strokeWidth={2} />
+                  </View>
+                </View>
                 <TouchableOpacity
                   style={[styles.advanceButton, advancing && styles.buttonDisabled]}
                   onPress={handleAdvanceTurn}
@@ -1020,30 +1031,74 @@ const styles = StyleSheet.create({
     letterSpacing: 1.5,
   },
   currentTurnIconContainer: {
-    marginBottom: 20,
+    marginBottom: 32,
   },
   currentTurnIconGradient: {
-    width: 290,
-    height: 290,
-    borderRadius: 145,
+    width: 280,
+    height: 280,
+    borderRadius: 140,
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#0EA5E9',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 12,
-    elevation: 6,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.4,
+    shadowRadius: 20,
+    elevation: 10,
   },
-  currentTurnLogo: {
+  currentTurnCircleInner: {
+    width: 260,
+    height: 260,
+    borderRadius: 130,
+    backgroundColor: '#FFFFFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'relative',
+  },
+  currentTurnNameInCircle: {
+    fontSize: 36,
+    fontWeight: '900',
+    color: '#0F172A',
+    textAlign: 'center',
+    letterSpacing: -0.5,
+    paddingHorizontal: 30,
+    zIndex: 2,
+  },
+  decorativeRing: {
+    position: 'absolute',
     width: 220,
     height: 220,
+    borderRadius: 110,
+    borderWidth: 2,
+    borderColor: '#BAE6FD',
+    borderStyle: 'dashed',
   },
-  currentTurnName: {
-    fontSize: 32,
-    fontWeight: '800',
-    color: '#0F172A',
-    marginBottom: 28,
-    letterSpacing: -0.5,
+  decorativeRingSecond: {
+    width: 240,
+    height: 240,
+    borderRadius: 120,
+    borderColor: '#E0F2FE',
+    borderWidth: 1.5,
+  },
+  sparkleDecorations: {
+    position: 'absolute',
+    width: '100%',
+    height: 320,
+    top: 60,
+  },
+  sparkleDecor: {
+    position: 'absolute',
+  },
+  sparkleDecor1: {
+    top: 20,
+    right: 30,
+  },
+  sparkleDecor2: {
+    top: 140,
+    left: 20,
+  },
+  sparkleDecor3: {
+    top: 80,
+    right: 50,
   },
   advanceButton: {
     borderRadius: 16,

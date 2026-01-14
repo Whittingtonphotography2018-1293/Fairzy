@@ -9,10 +9,10 @@ import {
   Platform,
   ActivityIndicator,
   ScrollView,
-  Image,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/contexts/AuthContext';
+import { RotateCcw } from 'lucide-react-native';
 
 export default function Signup() {
   const [displayName, setDisplayName] = useState('');
@@ -64,11 +64,10 @@ export default function Signup() {
       >
         <View style={styles.content}>
           <View style={styles.logoContainer}>
-            <Image
-              source={require('@/assets/images/generated-image-1767367222181.png')}
-              style={styles.logo}
-              resizeMode="contain"
-            />
+            <View style={styles.logoCircle}>
+              <RotateCcw size={40} color="#FFFFFF" strokeWidth={2.5} />
+            </View>
+            <Text style={styles.logoText}>Fairzy</Text>
           </View>
 
           <Text style={styles.subtitle}>The fun, fair way to share life's turns</Text>
@@ -162,18 +161,27 @@ const styles = StyleSheet.create({
   },
   logoContainer: {
     alignItems: 'center',
-    marginBottom: 24,
+    marginBottom: 32,
   },
-  logo: {
-    width: 200,
-    height: 60,
+  logoCircle: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: '#0EA5E9',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 12,
+    shadowColor: '#0EA5E9',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    elevation: 6,
   },
-  title: {
-    fontSize: 32,
-    fontWeight: '700',
-    color: '#000000',
-    textAlign: 'center',
-    marginBottom: 8,
+  logoText: {
+    fontSize: 36,
+    fontWeight: '900',
+    color: '#0F172A',
+    letterSpacing: -1,
   },
   subtitle: {
     fontSize: 16,
