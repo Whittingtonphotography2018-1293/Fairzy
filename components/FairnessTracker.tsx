@@ -198,7 +198,7 @@ export default function FairnessTracker() {
                   <View
                     style={[
                       styles.progressBar,
-                      { width: `${percentage}%` },
+                      { width: `${percentage}%` as any },
                     ]}
                   >
                     <LinearGradient
