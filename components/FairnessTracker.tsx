@@ -10,6 +10,7 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { BarChart3, Users, TrendingUp, AlertCircle, RefreshCw } from 'lucide-react-native';
 import { useAuth } from '@/contexts/AuthContext';
+import Constants from 'expo-constants';
 
 interface MemberStats {
   member_id: string;
@@ -55,7 +56,17 @@ export default function FairnessTracker() {
         throw new Error('Not authenticated');
       }
 
-      const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
+      const supabaseUrl =
+        Constants.expoConfig?.extra?.EXPO_PUBLIC_SUPABASE_URL ||
+        process.env.EXPO_PUBLIC_SUPABASE_URL;
+
+      const supabaseAnonKey =
+        Constants.expoConfig?.extra?.EXPO_PUBLIC_SUPABASE_ANON_KEY ||
+        process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
+
+      if (!supabaseUrl || !supabaseAnonKey) {
+        throw new Error('Supabase configuration not found');
+      }
 
       const response = await fetch(
         `${supabaseUrl}/functions/v1/fairness-analysis`,
@@ -64,7 +75,7 @@ export default function FairnessTracker() {
           headers: {
             'Authorization': `Bearer ${session.access_token}`,
             'Content-Type': 'application/json',
-            'apikey': process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || '',
+            'apikey': supabaseAnonKey,
           },
         }
       );
