@@ -2,7 +2,7 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-nati
 import { LinearGradient } from 'expo-linear-gradient';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'expo-router';
-import { LogOut, Mail, User as UserIcon, Shield, HelpCircle } from 'lucide-react-native';
+import { LogOut, Mail, User as UserIcon, Shield, HelpCircle, MessageSquare } from 'lucide-react-native';
 
 export default function Profile() {
   const { user, signOut } = useAuth();
@@ -55,6 +55,19 @@ export default function Profile() {
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Account Actions</Text>
+          <TouchableOpacity
+            style={styles.feedbackButton}
+            onPress={() => router.push('/feedback')}
+            activeOpacity={0.7}
+          >
+            <View style={styles.buttonContent}>
+              <View style={styles.feedbackIconContainer}>
+                <MessageSquare size={22} color="#10B981" strokeWidth={2.2} />
+              </View>
+              <Text style={styles.feedbackButtonText}>Send Feedback</Text>
+            </View>
+          </TouchableOpacity>
+
           <TouchableOpacity
             style={styles.supportButton}
             onPress={() => router.push('/support')}
@@ -206,6 +219,26 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     textTransform: 'uppercase',
     letterSpacing: 0.8,
+  },
+  feedbackButton: {
+    backgroundColor: '#F0FDF4',
+    borderRadius: 14,
+    borderWidth: 2,
+    borderColor: '#D1FAE5',
+    marginBottom: 12,
+  },
+  feedbackIconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    backgroundColor: '#FFFFFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  feedbackButtonText: {
+    fontSize: 17,
+    color: '#10B981',
+    fontWeight: '700',
   },
   supportButton: {
     backgroundColor: '#EFF6FF',
