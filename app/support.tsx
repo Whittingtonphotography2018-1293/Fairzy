@@ -12,11 +12,7 @@ export default function Support() {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Support</Text>
           <Text style={styles.paragraph}>
-            For support, questions, or feedback, please contact us at:
-          </Text>
-          <Text style={styles.email}>support@fairzy.app</Text>
-          <Text style={styles.paragraph}>
-            We typically respond within 24-48 hours during business days.
+            For support, questions, or feedback, please reach out through the app's feedback feature or contact the developer directly.
           </Text>
         </View>
 
@@ -99,9 +95,8 @@ export default function Support() {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Contact Information</Text>
           <Text style={styles.paragraph}>
-            If you have any questions about these Terms and Conditions, please contact us:
+            If you have any questions about these Terms and Conditions, please contact us through the app.
           </Text>
-          <Text style={styles.email}>support@fairzy.app</Text>
         </View>
 
         <View style={styles.footer}>
