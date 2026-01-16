@@ -24,6 +24,24 @@ Deno.serve(async (req: Request) => {
   try {
     const { invitedEmail, invitedBy, turnListName, turnListId }: InviteRequest = await req.json();
 
+    const resendApiKey = Deno.env.get("RESEND_API_KEY");
+    if (!resendApiKey) {
+      console.error("RESEND_API_KEY not configured");
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: "Email service not configured",
+        }),
+        {
+          status: 500,
+          headers: {
+            ...corsHeaders,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+    }
+
     const appUrl = Deno.env.get("APP_URL") || "https://whose-turn.app";
     const inviteLink = `${appUrl}/invites`;
 
@@ -92,17 +110,36 @@ ${inviteLink}
 If you didn't expect this invitation, you can safely ignore this email.
     `;
 
-    console.log("Email would be sent to:", invitedEmail);
-    console.log("Turn List:", turnListName);
-    console.log("Invite Link:", inviteLink);
+    const resendResponse = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${resendApiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        from: "Whose Turn <invites@whose-turn.app>",
+        to: [invitedEmail],
+        subject: `You've been invited to join "${turnListName}"`,
+        html: emailHtml,
+        text: emailText,
+      }),
+    });
+
+    if (!resendResponse.ok) {
+      const errorData = await resendResponse.text();
+      console.error("Resend API error:", errorData);
+      throw new Error(`Failed to send email: ${errorData}`);
+    }
+
+    const resendData = await resendResponse.json();
+    console.log("Email sent successfully:", resendData);
 
     return new Response(
       JSON.stringify({
         success: true,
-        message: "Invitation email prepared",
+        message: "Invitation email sent",
         email: invitedEmail,
-        emailHtml,
-        emailText,
+        emailId: resendData.id,
       }),
       {
         headers: {
