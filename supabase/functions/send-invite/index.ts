@@ -43,6 +43,7 @@ Deno.serve(async (req: Request) => {
     }
 
     const appUrl = Deno.env.get("APP_URL") || "https://whose-turn.app";
+    const fromEmail = Deno.env.get("FROM_EMAIL") || "Whose Turn <invites@whose-turn.app>";
     const inviteLink = `${appUrl}/invites`;
 
     const emailHtml = `
@@ -117,7 +118,7 @@ If you didn't expect this invitation, you can safely ignore this email.
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: "Whose Turn <onboarding@resend.dev>",
+        from: fromEmail,
         to: [invitedEmail],
         subject: `You've been invited to join "${turnListName}"`,
         html: emailHtml,
