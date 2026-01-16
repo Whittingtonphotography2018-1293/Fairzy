@@ -18,7 +18,6 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
-import { InviteModal } from '@/components/InviteModal';
 import { AddMemberModal } from '@/components/AddMemberModal';
 import {
   ArrowLeft,
@@ -36,9 +35,6 @@ import {
   Sparkles,
   MoreVertical,
   Trash2,
-  UserMinus,
-  Mail,
-  User,
 } from 'lucide-react-native';
 import Animated, {
   useSharedValue,
@@ -107,8 +103,6 @@ export default function TurnListDetail() {
   const [refreshing, setRefreshing] = useState(false);
   const [advancing, setAdvancing] = useState(false);
   const [addMemberModalVisible, setAddMemberModalVisible] = useState(false);
-  const [inviteModalVisible, setInviteModalVisible] = useState(false);
-  const [addOptionsModalVisible, setAddOptionsModalVisible] = useState(false);
   const [error, setError] = useState('');
   const [showHistory, setShowHistory] = useState(false);
   const [menuModalVisible, setMenuModalVisible] = useState(false);
@@ -316,10 +310,6 @@ export default function TurnListDetail() {
     }
   };
 
-  const handleInviteSent = () => {
-    loadData();
-  };
-
   const handleMemberAdded = () => {
     loadData();
   };
@@ -479,7 +469,7 @@ export default function TurnListDetail() {
           ) : null}
         </View>
         <View style={styles.headerActions}>
-          <TouchableOpacity onPress={() => setAddOptionsModalVisible(true)} style={styles.headerButton} activeOpacity={0.7}>
+          <TouchableOpacity onPress={() => setAddMemberModalVisible(true)} style={styles.headerButton} activeOpacity={0.7}>
             <UserPlus size={24} color="#007AFF" strokeWidth={2.2} />
           </TouchableOpacity>
           <TouchableOpacity onPress={() => setMenuModalVisible(true)} style={styles.headerButton} activeOpacity={0.7}>
@@ -499,7 +489,7 @@ export default function TurnListDetail() {
             <Text style={styles.emptyText}>Add members to start tracking turns</Text>
             <TouchableOpacity
               style={styles.emptyButton}
-              onPress={() => setAddOptionsModalVisible(true)}
+              onPress={() => setAddMemberModalVisible(true)}
             >
               <Text style={styles.emptyButtonText}>Add Member</Text>
             </TouchableOpacity>
@@ -744,74 +734,12 @@ export default function TurnListDetail() {
         )}
       </ScrollView>
 
-      <Modal
-        visible={addOptionsModalVisible}
-        animationType="fade"
-        transparent={true}
-        onRequestClose={() => setAddOptionsModalVisible(false)}
-      >
-        <TouchableOpacity
-          style={styles.menuOverlay}
-          activeOpacity={1}
-          onPress={() => setAddOptionsModalVisible(false)}
-        >
-          <View style={styles.addOptionsContent}>
-            <Text style={styles.addOptionsTitle}>Add Member</Text>
-            <TouchableOpacity
-              style={styles.addOptionItem}
-              onPress={() => {
-                setAddOptionsModalVisible(false);
-                setAddMemberModalVisible(true);
-              }}
-            >
-              <View style={styles.addOptionIconContainer}>
-                <User size={24} color="#10B981" strokeWidth={2} />
-              </View>
-              <View style={styles.addOptionTextContainer}>
-                <Text style={styles.addOptionTitle}>Add by Name</Text>
-                <Text style={styles.addOptionDescription}>
-                  Add someone without an account
-                </Text>
-              </View>
-              <ChevronRight size={20} color="#94A3B8" />
-            </TouchableOpacity>
-            <View style={styles.addOptionDivider} />
-            <TouchableOpacity
-              style={styles.addOptionItem}
-              onPress={() => {
-                setAddOptionsModalVisible(false);
-                setInviteModalVisible(true);
-              }}
-            >
-              <View style={styles.addOptionIconContainer}>
-                <Mail size={24} color="#007AFF" strokeWidth={2} />
-              </View>
-              <View style={styles.addOptionTextContainer}>
-                <Text style={styles.addOptionTitle}>Invite by Email</Text>
-                <Text style={styles.addOptionDescription}>
-                  Send an invitation to join
-                </Text>
-              </View>
-              <ChevronRight size={20} color="#94A3B8" />
-            </TouchableOpacity>
-          </View>
-        </TouchableOpacity>
-      </Modal>
-
       <AddMemberModal
         visible={addMemberModalVisible}
         onClose={() => setAddMemberModalVisible(false)}
         turnListId={id}
         turnListName={turnList?.name || ''}
         onMemberAdded={handleMemberAdded}
-      />
-
-      <InviteModal
-        visible={inviteModalVisible}
-        onClose={() => setInviteModalVisible(false)}
-        turnListId={id}
-        turnListName={turnList?.name || ''}
-        onInviteSent={handleInviteSent}
       />
 
       <Modal
@@ -1727,57 +1655,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     color: '#FFFFFF',
-  },
-  addOptionsContent: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 20,
-    minWidth: 320,
-    overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.15,
-    shadowRadius: 20,
-    elevation: 8,
-  },
-  addOptionsTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#0F172A',
-    padding: 20,
-    paddingBottom: 12,
-  },
-  addOptionItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    gap: 14,
-  },
-  addOptionIconContainer: {
-    width: 48,
-    height: 48,
-    borderRadius: 12,
-    backgroundColor: '#F8FAFC',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  addOptionTextContainer: {
-    flex: 1,
-  },
-  addOptionTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#0F172A',
-    marginBottom: 2,
-  },
-  addOptionDescription: {
-    fontSize: 13,
-    color: '#64748B',
-    fontWeight: '500',
-  },
-  addOptionDivider: {
-    height: 1,
-    backgroundColor: '#E2E8F0',
-    marginHorizontal: 20,
   },
 });
