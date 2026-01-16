@@ -117,7 +117,7 @@ If you didn't expect this invitation, you can safely ignore this email.
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: "Whose Turn <invites@whose-turn.app>",
+        from: "Whose Turn <onboarding@resend.dev>",
         to: [invitedEmail],
         subject: `You've been invited to join "${turnListName}"`,
         html: emailHtml,
