@@ -18,6 +18,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
+import { InviteModal } from '@/components/InviteModal';
 import {
   ArrowLeft,
   UserPlus,
@@ -102,9 +103,7 @@ export default function TurnListDetail() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [advancing, setAdvancing] = useState(false);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [newMemberName, setNewMemberName] = useState('');
-  const [addingMember, setAddingMember] = useState(false);
+  const [inviteModalVisible, setInviteModalVisible] = useState(false);
   const [error, setError] = useState('');
   const [showHistory, setShowHistory] = useState(false);
   const [menuModalVisible, setMenuModalVisible] = useState(false);
@@ -148,6 +147,43 @@ export default function TurnListDetail() {
   useEffect(() => {
     if (user) {
       loadData();
+
+      const membersChannel = supabase
+        .channel(`turn-list-members-${id}`)
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'turn_list_members',
+            filter: `turn_list_id=eq.${id}`,
+          },
+          () => {
+            loadData();
+          }
+        )
+        .subscribe();
+
+      const historyChannel = supabase
+        .channel(`turn-list-history-${id}`)
+        .on(
+          'postgres_changes',
+          {
+            event: 'INSERT',
+            schema: 'public',
+            table: 'turn_history',
+            filter: `turn_list_id=eq.${id}`,
+          },
+          () => {
+            loadData();
+          }
+        )
+        .subscribe();
+
+      return () => {
+        supabase.removeChannel(membersChannel);
+        supabase.removeChannel(historyChannel);
+      };
     }
   }, [id, user]);
 
@@ -275,35 +311,8 @@ export default function TurnListDetail() {
     }
   };
 
-  const handleAddMember = async () => {
-    if (!newMemberName.trim()) {
-      setError('Please enter a member name');
-      return;
-    }
-
-    setAddingMember(true);
-    setError('');
-
-    try {
-      const newPosition = members.length;
-
-      const { error } = await supabase.from('turn_list_members').insert({
-        turn_list_id: id,
-        user_id: user!.id,
-        display_name: newMemberName.trim(),
-        position: newPosition,
-      });
-
-      if (error) throw error;
-
-      setModalVisible(false);
-      setNewMemberName('');
-      loadData();
-    } catch (error: any) {
-      setError(error.message || 'Failed to add member');
-    } finally {
-      setAddingMember(false);
-    }
+  const handleInviteSent = () => {
+    loadData();
   };
 
   const handleDeleteList = () => {
@@ -461,7 +470,7 @@ export default function TurnListDetail() {
           ) : null}
         </View>
         <View style={styles.headerActions}>
-          <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.headerButton} activeOpacity={0.7}>
+          <TouchableOpacity onPress={() => setInviteModalVisible(true)} style={styles.headerButton} activeOpacity={0.7}>
             <UserPlus size={24} color="#007AFF" strokeWidth={2.2} />
           </TouchableOpacity>
           <TouchableOpacity onPress={() => setMenuModalVisible(true)} style={styles.headerButton} activeOpacity={0.7}>
@@ -478,12 +487,12 @@ export default function TurnListDetail() {
           <View style={styles.emptyContainer}>
             <Users size={64} color="#CCCCCC" />
             <Text style={styles.emptyTitle}>No Members Yet</Text>
-            <Text style={styles.emptyText}>Add members to start tracking turns</Text>
+            <Text style={styles.emptyText}>Invite members to start tracking turns</Text>
             <TouchableOpacity
               style={styles.emptyButton}
-              onPress={() => setModalVisible(true)}
+              onPress={() => setInviteModalVisible(true)}
             >
-              <Text style={styles.emptyButtonText}>Add Member</Text>
+              <Text style={styles.emptyButtonText}>Invite Member</Text>
             </TouchableOpacity>
           </View>
         ) : (
@@ -726,61 +735,13 @@ export default function TurnListDetail() {
         )}
       </ScrollView>
 
-      <Modal
-        visible={modalVisible}
-        animationType="slide"
-        transparent={true}
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <KeyboardAvoidingView
-          style={styles.modalOverlay}
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        >
-          <View style={styles.modalContent}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Add Member</Text>
-              <TouchableOpacity
-                onPress={() => {
-                  setModalVisible(false);
-                  setError('');
-                  setNewMemberName('');
-                }}
-              >
-                <X size={24} color="#000000" />
-              </TouchableOpacity>
-            </View>
-
-            {error ? (
-              <View style={styles.errorContainer}>
-                <Text style={styles.errorText}>{error}</Text>
-              </View>
-            ) : null}
-
-            <View style={styles.modalForm}>
-              <TextInput
-                style={styles.input}
-                placeholder="Member Name"
-                placeholderTextColor="#999"
-                value={newMemberName}
-                onChangeText={setNewMemberName}
-                editable={!addingMember}
-              />
-
-              <TouchableOpacity
-                style={[styles.createButton, addingMember && styles.buttonDisabled]}
-                onPress={handleAddMember}
-                disabled={addingMember}
-              >
-                {addingMember ? (
-                  <ActivityIndicator color="#FFFFFF" />
-                ) : (
-                  <Text style={styles.createButtonText}>Add Member</Text>
-                )}
-              </TouchableOpacity>
-            </View>
-          </View>
-        </KeyboardAvoidingView>
-      </Modal>
+      <InviteModal
+        visible={inviteModalVisible}
+        onClose={() => setInviteModalVisible(false)}
+        turnListId={id}
+        turnListName={turnList?.name || ''}
+        onInviteSent={handleInviteSent}
+      />
 
       <Modal
         visible={timerModalVisible}

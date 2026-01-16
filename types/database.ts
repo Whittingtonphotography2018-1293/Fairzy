@@ -141,6 +141,61 @@ export type Database = {
           }
         ]
       }
+      turn_list_invites: {
+        Row: {
+          id: string
+          turn_list_id: string
+          invited_by: string
+          invited_email: string
+          invited_user_id: string | null
+          status: string
+          created_at: string
+          responded_at: string | null
+        }
+        Insert: {
+          id?: string
+          turn_list_id: string
+          invited_by: string
+          invited_email: string
+          invited_user_id?: string | null
+          status?: string
+          created_at?: string
+          responded_at?: string | null
+        }
+        Update: {
+          id?: string
+          turn_list_id?: string
+          invited_by?: string
+          invited_email?: string
+          invited_user_id?: string | null
+          status?: string
+          created_at?: string
+          responded_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "turn_list_invites_turn_list_id_fkey"
+            columns: ["turn_list_id"]
+            isOneToOne: false
+            referencedRelation: "turn_lists"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "turn_list_invites_invited_by_fkey"
+            columns: ["invited_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "turn_list_invites_invited_user_id_fkey"
+            columns: ["invited_user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
     }
     Views: {
       [_ in never]: never

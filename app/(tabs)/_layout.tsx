@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { Tabs, useRouter } from 'expo-router';
-import { Home, User } from 'lucide-react-native';
+import { Home, User, Mail } from 'lucide-react-native';
 import { useAuth } from '@/contexts/AuthContext';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
 
@@ -45,6 +45,13 @@ export default function TabLayout() {
         options={{
           title: 'Turn Lists',
           tabBarIcon: ({ size, color }) => <Home size={size} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="invites"
+        options={{
+          title: 'Invites',
+          tabBarIcon: ({ size, color }) => <Mail size={size} color={color} />,
         }}
       />
       <Tabs.Screen
