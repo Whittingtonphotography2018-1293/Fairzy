@@ -91,28 +91,29 @@ export function InviteModal({ visible, onClose, turnListId, turnListName, onInvi
 
       if (inviteError) throw inviteError;
 
-      try {
-        const apiUrl = `${process.env.EXPO_PUBLIC_SUPABASE_URL}/functions/v1/send-invite`;
-        const response = await fetch(apiUrl, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            invitedEmail: email.trim().toLowerCase(),
-            invitedBy: user!.id,
-            turnListName: turnListName,
-            turnListId: turnListId,
-          }),
-        });
+      const apiUrl = `${process.env.EXPO_PUBLIC_SUPABASE_URL}/functions/v1/send-invite`;
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          invitedEmail: email.trim().toLowerCase(),
+          invitedBy: user!.id,
+          turnListName: turnListName,
+          turnListId: turnListId,
+        }),
+      });
 
-        if (!response.ok) {
-          console.error('Failed to send email notification');
-        }
-      } catch (emailError) {
-        console.error('Error sending email:', emailError);
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Email sending failed:', errorData);
+        throw new Error(errorData.error || 'Failed to send invitation email');
       }
+
+      const emailResult = await response.json();
+      console.log('Email sent successfully:', emailResult);
 
       setSuccess(`Invitation sent to ${email}!`);
       setTimeout(() => {
