@@ -91,6 +91,29 @@ export function InviteModal({ visible, onClose, turnListId, turnListName, onInvi
 
       if (inviteError) throw inviteError;
 
+      try {
+        const apiUrl = `${process.env.EXPO_PUBLIC_SUPABASE_URL}/functions/v1/send-invite`;
+        const response = await fetch(apiUrl, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            invitedEmail: email.trim().toLowerCase(),
+            invitedBy: user!.id,
+            turnListName: turnListName,
+            turnListId: turnListId,
+          }),
+        });
+
+        if (!response.ok) {
+          console.error('Failed to send email notification');
+        }
+      } catch (emailError) {
+        console.error('Error sending email:', emailError);
+      }
+
       setSuccess(`Invitation sent to ${email}!`);
       setTimeout(() => {
         setEmail('');
