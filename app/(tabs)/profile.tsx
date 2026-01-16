@@ -1,12 +1,15 @@
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, ActivityIndicator } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'expo-router';
-import { LogOut, Mail, User as UserIcon, Shield, HelpCircle, MessageSquare } from 'lucide-react-native';
+import { LogOut, Mail, User as UserIcon, Shield, HelpCircle, MessageSquare, Trash2 } from 'lucide-react-native';
+import { supabase } from '@/lib/supabase';
+import { useState } from 'react';
 
 export default function Profile() {
   const { user, signOut } = useAuth();
   const router = useRouter();
+  const [deleting, setDeleting] = useState(false);
 
   const handleSignOut = async () => {
     try {
@@ -16,6 +19,42 @@ export default function Profile() {
     } catch (error) {
       console.error('Sign out error:', error);
     }
+  };
+
+  const handleDeleteAccount = async () => {
+    Alert.alert(
+      'Delete Account',
+      'Are you sure you want to delete your account? This will permanently delete all your turn lists, history, and data. This action cannot be undone.',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            setDeleting(true);
+            try {
+              const { error } = await supabase.rpc('delete_user');
+
+              if (error) throw error;
+
+              await signOut();
+              router.replace('/(auth)/login');
+            } catch (error: any) {
+              console.error('Error deleting account:', error);
+              Alert.alert(
+                'Error',
+                error.message || 'Failed to delete account. Please try again or contact support.'
+              );
+            } finally {
+              setDeleting(false);
+            }
+          },
+        },
+      ]
+    );
   };
 
   const displayName = user?.user_metadata?.display_name || 'User';
@@ -91,6 +130,29 @@ export default function Profile() {
                 <LogOut size={22} color="#EF4444" strokeWidth={2.2} />
               </View>
               <Text style={styles.buttonText}>Sign Out</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.dangerZone}>
+          <Text style={styles.dangerZoneTitle}>Danger Zone</Text>
+          <TouchableOpacity
+            style={styles.deleteButton}
+            onPress={handleDeleteAccount}
+            activeOpacity={0.7}
+            disabled={deleting}
+          >
+            <View style={styles.buttonContent}>
+              {deleting ? (
+                <ActivityIndicator color="#DC2626" />
+              ) : (
+                <>
+                  <View style={styles.deleteIconContainer}>
+                    <Trash2 size={22} color="#DC2626" strokeWidth={2.2} />
+                  </View>
+                  <Text style={styles.deleteButtonText}>Delete Account</Text>
+                </>
+              )}
             </View>
           </TouchableOpacity>
         </View>
@@ -283,6 +345,44 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 17,
     color: '#EF4444',
+    fontWeight: '700',
+  },
+  dangerZone: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
+    padding: 20,
+    marginTop: 24,
+    shadowColor: '#0F172A',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.06,
+    shadowRadius: 12,
+    elevation: 3,
+  },
+  dangerZoneTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#DC2626',
+    marginBottom: 12,
+    textTransform: 'uppercase',
+    letterSpacing: 0.8,
+  },
+  deleteButton: {
+    backgroundColor: '#FEF2F2',
+    borderRadius: 14,
+    borderWidth: 2,
+    borderColor: '#FEE2E2',
+  },
+  deleteIconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    backgroundColor: '#FFFFFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  deleteButtonText: {
+    fontSize: 17,
+    color: '#DC2626',
     fontWeight: '700',
   },
   footer: {
