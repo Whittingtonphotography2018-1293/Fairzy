@@ -6,6 +6,7 @@ import {
   ActivityIndicator,
   ScrollView,
   TouchableOpacity,
+  Image,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BarChart3, Users, TrendingUp, AlertCircle, RefreshCw } from 'lucide-react-native';
@@ -16,6 +17,7 @@ interface MemberStats {
   member_id: string;
   display_name: string;
   user_id: string;
+  photo_url: string | null;
   total_turns: number;
   lists: {
     list_name: string;
@@ -195,7 +197,16 @@ export default function FairnessTracker() {
               <View key={member.member_id} style={styles.memberCard}>
                 <View style={styles.memberHeader}>
                   <View style={styles.memberInfo}>
-                    <Users size={20} color="#64748B" />
+                    {member.photo_url ? (
+                      <Image
+                        source={{ uri: member.photo_url }}
+                        style={styles.memberPhoto}
+                      />
+                    ) : (
+                      <View style={styles.memberPhotoPlaceholder}>
+                        <Users size={20} color="#64748B" />
+                      </View>
+                    )}
                     <Text style={styles.memberName}>{member.display_name}</Text>
                   </View>
                   <View style={styles.memberStats}>
@@ -425,13 +436,31 @@ const styles = StyleSheet.create({
   memberInfo: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: 12,
     flex: 1,
+  },
+  memberPhoto: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    borderWidth: 2,
+    borderColor: '#E2E8F0',
+  },
+  memberPhotoPlaceholder: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#F1F5F9',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: '#E2E8F0',
   },
   memberName: {
     fontSize: 18,
     fontWeight: '700',
     color: '#0F172A',
+    flex: 1,
   },
   memberStats: {
     flexDirection: 'row',

@@ -56,6 +56,7 @@ export type Database = {
           position: number
           joined_at: string
           is_active: boolean
+          photo_url: string | null
         }
         Insert: {
           id?: string
@@ -65,6 +66,7 @@ export type Database = {
           position: number
           joined_at?: string
           is_active?: boolean
+          photo_url?: string | null
         }
         Update: {
           id?: string
@@ -74,6 +76,7 @@ export type Database = {
           position?: number
           joined_at?: string
           is_active?: boolean
+          photo_url?: string | null
         }
         Relationships: [
           {

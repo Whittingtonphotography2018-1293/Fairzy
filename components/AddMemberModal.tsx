@@ -13,6 +13,7 @@ import {
 import { X, UserPlus } from 'lucide-react-native';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
+import { MemberImagePicker } from './MemberImagePicker';
 
 interface Props {
   visible: boolean;
@@ -24,6 +25,7 @@ interface Props {
 
 export function AddMemberModal({ visible, onClose, turnListId, turnListName, onMemberAdded }: Props) {
   const [name, setName] = useState('');
+  const [photoUrl, setPhotoUrl] = useState<string | null>(null);
   const [adding, setAdding] = useState(false);
   const [error, setError] = useState('');
   const { user } = useAuth();
@@ -56,11 +58,13 @@ export function AddMemberModal({ visible, onClose, turnListId, turnListName, onM
           user_id: user!.id,
           display_name: name.trim(),
           position: nextPosition,
+          photo_url: photoUrl,
         });
 
       if (memberError) throw memberError;
 
       setName('');
+      setPhotoUrl(null);
       onMemberAdded();
       onClose();
     } catch (error: any) {
@@ -73,6 +77,7 @@ export function AddMemberModal({ visible, onClose, turnListId, turnListName, onM
 
   const handleClose = () => {
     setName('');
+    setPhotoUrl(null);
     setError('');
     onClose();
   };
@@ -106,6 +111,17 @@ export function AddMemberModal({ visible, onClose, turnListId, turnListName, onM
           ) : null}
 
           <View style={styles.modalForm}>
+            <View style={styles.photoSection}>
+              <MemberImagePicker
+                currentPhotoUrl={photoUrl}
+                onPhotoSelected={setPhotoUrl}
+                size={100}
+              />
+              <Text style={styles.photoHelpText}>
+                Optional: Add a photo
+              </Text>
+            </View>
+
             <View style={styles.inputContainer}>
               <TextInput
                 style={styles.input}
@@ -187,6 +203,16 @@ const styles = StyleSheet.create({
   },
   modalForm: {
     gap: 16,
+  },
+  photoSection: {
+    alignItems: 'center',
+    paddingVertical: 8,
+  },
+  photoHelpText: {
+    fontSize: 13,
+    color: '#64748B',
+    marginTop: 8,
+    fontWeight: '500',
   },
   inputContainer: {
     backgroundColor: '#F8FAFC',

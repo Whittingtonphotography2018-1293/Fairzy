@@ -106,7 +106,8 @@ Deno.serve(async (req: Request) => {
         turn_taken_at,
         turn_list_members (
           display_name,
-          user_id
+          user_id,
+          photo_url
         )
       `)
       .in('turn_list_id', listIds)
@@ -118,6 +119,7 @@ Deno.serve(async (req: Request) => {
       member_id: string;
       display_name: string;
       user_id: string;
+      photo_url: string | null;
       lists: Map<string, { list_name: string; category: string; count: number }>;
       total_turns: number;
     }>();
@@ -126,7 +128,7 @@ Deno.serve(async (req: Request) => {
       const memberId = history.member_id;
       const listId = history.turn_list_id;
       const memberInfo = history.turn_list_members;
-      
+
       if (!memberId || !memberInfo) continue;
 
       if (!memberStats.has(memberId)) {
@@ -134,6 +136,7 @@ Deno.serve(async (req: Request) => {
           member_id: memberId,
           display_name: memberInfo.display_name,
           user_id: memberInfo.user_id,
+          photo_url: memberInfo.photo_url,
           lists: new Map(),
           total_turns: 0,
         });
@@ -160,6 +163,7 @@ Deno.serve(async (req: Request) => {
       member_id: member.member_id,
       display_name: member.display_name,
       user_id: member.user_id,
+      photo_url: member.photo_url,
       total_turns: member.total_turns,
       lists: Array.from(member.lists.values()),
     }));

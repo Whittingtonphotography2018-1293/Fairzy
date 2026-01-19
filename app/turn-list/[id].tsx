@@ -13,6 +13,7 @@ import {
   Platform,
   Alert,
   Vibration,
+  Image,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -59,6 +60,7 @@ interface Member {
   display_name: string;
   position: number;
   is_active: boolean;
+  photo_url: string | null;
 }
 
 interface HistoryItem {
@@ -677,6 +679,16 @@ export default function TurnListDetail() {
                     <View style={styles.memberPosition}>
                       <Text style={styles.memberPositionText}>{index + 1}</Text>
                     </View>
+                    {member.photo_url ? (
+                      <Image
+                        source={{ uri: member.photo_url }}
+                        style={styles.memberPhoto}
+                      />
+                    ) : (
+                      <View style={styles.memberPhotoPlaceholder}>
+                        <Users size={16} color="#94A3B8" />
+                      </View>
+                    )}
                     <Text
                       style={[
                         styles.memberName,
@@ -1380,6 +1392,23 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '700',
     color: '#64748B',
+  },
+  memberPhoto: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    borderWidth: 2,
+    borderColor: '#E2E8F0',
+  },
+  memberPhotoPlaceholder: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: '#F1F5F9',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: '#E2E8F0',
   },
   memberName: {
     flex: 1,
