@@ -21,7 +21,8 @@ import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 import { AddMemberModal } from '@/components/AddMemberModal';
 import { EditMemberModal } from '@/components/EditMemberModal';
-import { ArrowLeft, UserPlus, X, Clock, Users, ChevronRight, Play, Pause, RotateCcw, Timer, Settings, Bell, Sparkles, MoveVertical as MoreVertical, Trash2, CreditCard as Edit } from 'lucide-react-native';
+import { InviteMemberModal } from '@/components/InviteMemberModal';
+import { ArrowLeft, UserPlus, X, Clock, Users, ChevronRight, Play, Pause, RotateCcw, Timer, Settings, Bell, Sparkles, MoveVertical as MoreVertical, Trash2, CreditCard as Edit, Mail } from 'lucide-react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -90,6 +91,7 @@ export default function TurnListDetail() {
   const [refreshing, setRefreshing] = useState(false);
   const [advancing, setAdvancing] = useState(false);
   const [addMemberModalVisible, setAddMemberModalVisible] = useState(false);
+  const [inviteMemberModalVisible, setInviteMemberModalVisible] = useState(false);
   const [editMemberModalVisible, setEditMemberModalVisible] = useState(false);
   const [memberToEdit, setMemberToEdit] = useState<Member | null>(null);
   const [error, setError] = useState('');
@@ -459,7 +461,10 @@ export default function TurnListDetail() {
         </View>
         <View style={styles.headerActions}>
           <TouchableOpacity onPress={() => setAddMemberModalVisible(true)} style={styles.headerButton} activeOpacity={0.7}>
-            <UserPlus size={24} color="#007AFF" strokeWidth={2.2} />
+            <UserPlus size={24} color="#10B981" strokeWidth={2.2} />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => setInviteMemberModalVisible(true)} style={styles.headerButton} activeOpacity={0.7}>
+            <Mail size={24} color="#007AFF" strokeWidth={2.2} />
           </TouchableOpacity>
           <TouchableOpacity onPress={() => setMenuModalVisible(true)} style={styles.headerButton} activeOpacity={0.7}>
             <MoreVertical size={24} color="#0F172A" strokeWidth={2.2} />
@@ -750,6 +755,16 @@ export default function TurnListDetail() {
         turnListId={id}
         turnListName={turnList?.name || ''}
         onMemberAdded={handleMemberAdded}
+      />
+
+      <InviteMemberModal
+        visible={inviteMemberModalVisible}
+        onClose={() => setInviteMemberModalVisible(false)}
+        turnListId={id}
+        turnListName={turnList?.name || ''}
+        onInviteSent={() => {
+          loadData();
+        }}
       />
 
       <EditMemberModal

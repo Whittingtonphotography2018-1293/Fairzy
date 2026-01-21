@@ -2,7 +2,7 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator
 import { LinearGradient } from 'expo-linear-gradient';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'expo-router';
-import { LogOut, Mail, User as UserIcon, Shield, HelpCircle, MessageSquare, Trash2, AlertTriangle, X } from 'lucide-react-native';
+import { LogOut, Mail, User as UserIcon, Shield, HelpCircle, MessageSquare, Trash2, AlertTriangle, X, Inbox } from 'lucide-react-native';
 import { supabase } from '@/lib/supabase';
 import { useState } from 'react';
 
@@ -83,6 +83,19 @@ export default function Profile() {
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Account Actions</Text>
+          <TouchableOpacity
+            style={styles.invitationsButton}
+            onPress={() => router.push('/invitations')}
+            activeOpacity={0.7}
+          >
+            <View style={styles.buttonContent}>
+              <View style={styles.invitationsIconContainer}>
+                <Inbox size={22} color="#8B5CF6" strokeWidth={2.2} />
+              </View>
+              <Text style={styles.invitationsButtonText}>View Invitations</Text>
+            </View>
+          </TouchableOpacity>
+
           <TouchableOpacity
             style={styles.feedbackButton}
             onPress={() => router.push('/feedback')}
@@ -326,6 +339,26 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     textTransform: 'uppercase',
     letterSpacing: 0.8,
+  },
+  invitationsButton: {
+    backgroundColor: '#F5F3FF',
+    borderRadius: 14,
+    borderWidth: 2,
+    borderColor: '#E9D5FF',
+    marginBottom: 12,
+  },
+  invitationsIconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    backgroundColor: '#FFFFFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  invitationsButtonText: {
+    fontSize: 17,
+    color: '#8B5CF6',
+    fontWeight: '700',
   },
   feedbackButton: {
     backgroundColor: '#F0FDF4',
