@@ -20,6 +20,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 import { AddMemberModal } from '@/components/AddMemberModal';
+import { EditMemberModal } from '@/components/EditMemberModal';
 import {
   ArrowLeft,
   UserPlus,
@@ -36,6 +37,7 @@ import {
   Sparkles,
   MoreVertical,
   Trash2,
+  Edit,
 } from 'lucide-react-native';
 import Animated, {
   useSharedValue,
@@ -105,6 +107,8 @@ export default function TurnListDetail() {
   const [refreshing, setRefreshing] = useState(false);
   const [advancing, setAdvancing] = useState(false);
   const [addMemberModalVisible, setAddMemberModalVisible] = useState(false);
+  const [editMemberModalVisible, setEditMemberModalVisible] = useState(false);
+  const [memberToEdit, setMemberToEdit] = useState<Member | null>(null);
   const [error, setError] = useState('');
   const [showHistory, setShowHistory] = useState(false);
   const [menuModalVisible, setMenuModalVisible] = useState(false);
@@ -698,12 +702,23 @@ export default function TurnListDetail() {
                       {member.display_name}
                     </Text>
                     {editMode && (
-                      <TouchableOpacity
-                        onPress={() => handleRemoveMember(member.id)}
-                        style={styles.deleteMemberButton}
-                      >
-                        <Trash2 size={18} color="#DC2626" strokeWidth={2} />
-                      </TouchableOpacity>
+                      <View style={styles.memberActions}>
+                        <TouchableOpacity
+                          onPress={() => {
+                            setMemberToEdit(member);
+                            setEditMemberModalVisible(true);
+                          }}
+                          style={styles.editMemberButton}
+                        >
+                          <Edit size={18} color="#007AFF" strokeWidth={2} />
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          onPress={() => handleRemoveMember(member.id)}
+                          style={styles.deleteMemberButton}
+                        >
+                          <Trash2 size={18} color="#DC2626" strokeWidth={2} />
+                        </TouchableOpacity>
+                      </View>
                     )}
                   </View>
                 ))}
@@ -752,6 +767,21 @@ export default function TurnListDetail() {
         turnListId={id}
         turnListName={turnList?.name || ''}
         onMemberAdded={handleMemberAdded}
+      />
+
+      <EditMemberModal
+        visible={editMemberModalVisible}
+        onClose={() => {
+          setEditMemberModalVisible(false);
+          setMemberToEdit(null);
+        }}
+        member={memberToEdit}
+        turnListName={turnList?.name || ''}
+        onMemberUpdated={() => {
+          loadData();
+          setEditMemberModalVisible(false);
+          setMemberToEdit(null);
+        }}
       />
 
       <Modal
@@ -1419,6 +1449,15 @@ const styles = StyleSheet.create({
   memberNameActive: {
     fontWeight: '700',
     color: '#007AFF',
+  },
+  memberActions: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  editMemberButton: {
+    padding: 8,
+    backgroundColor: '#E0F2FE',
+    borderRadius: 8,
   },
   deleteMemberButton: {
     padding: 8,
