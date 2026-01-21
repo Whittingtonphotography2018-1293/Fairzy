@@ -21,24 +21,7 @@ import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 import { AddMemberModal } from '@/components/AddMemberModal';
 import { EditMemberModal } from '@/components/EditMemberModal';
-import {
-  ArrowLeft,
-  UserPlus,
-  X,
-  Clock,
-  Users,
-  ChevronRight,
-  Play,
-  Pause,
-  RotateCcw,
-  Timer,
-  Settings,
-  Bell,
-  Sparkles,
-  MoreVertical,
-  Trash2,
-  Edit,
-} from 'lucide-react-native';
+import { ArrowLeft, UserPlus, X, Clock, Users, ChevronRight, Play, Pause, RotateCcw, Timer, Settings, Bell, Sparkles, MoveVertical as MoreVertical, Trash2, CreditCard as Edit } from 'lucide-react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
