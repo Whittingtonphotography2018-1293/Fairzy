@@ -13,6 +13,8 @@ import {
 import { X, Mail, UserPlus } from 'lucide-react-native';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
+import { useSubscription } from '@/contexts/SubscriptionContext';
+import { PaywallModal } from './PaywallModal';
 
 interface Props {
   visible: boolean;
@@ -27,7 +29,9 @@ export function InviteMemberModal({ visible, onClose, turnListId, turnListName, 
   const [sending, setSending] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const [paywallVisible, setPaywallVisible] = useState(false);
   const { user } = useAuth();
+  const { isPremium } = useSubscription();
 
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -35,6 +39,11 @@ export function InviteMemberModal({ visible, onClose, turnListId, turnListName, 
   };
 
   const handleSendInvite = async () => {
+    if (!isPremium) {
+      setPaywallVisible(true);
+      return;
+    }
+
     if (!email.trim()) {
       setError('Please enter an email address');
       return;
@@ -107,12 +116,19 @@ export function InviteMemberModal({ visible, onClose, turnListId, turnListName, 
   };
 
   return (
-    <Modal
-      visible={visible}
-      animationType="slide"
-      transparent={true}
-      onRequestClose={handleClose}
-    >
+    <>
+      <PaywallModal
+        visible={paywallVisible}
+        onClose={() => setPaywallVisible(false)}
+        feature="invites"
+      />
+
+      <Modal
+        visible={visible}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={handleClose}
+      >
       <KeyboardAvoidingView
         style={styles.modalOverlay}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -185,6 +201,7 @@ export function InviteMemberModal({ visible, onClose, turnListId, turnListName, 
         </View>
       </KeyboardAvoidingView>
     </Modal>
+    </>
   );
 }
 

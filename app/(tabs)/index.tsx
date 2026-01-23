@@ -17,6 +17,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
+import { useSubscription } from '@/contexts/SubscriptionContext';
+import { PaywallModal } from '@/components/PaywallModal';
 import {
   Plus,
   X,
@@ -115,11 +117,13 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+  const [paywallVisible, setPaywallVisible] = useState(false);
   const [newListName, setNewListName] = useState('');
   const [newListCategory, setNewListCategory] = useState('');
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState('');
   const { user } = useAuth();
+  const { isPremium } = useSubscription();
   const router = useRouter();
 
   useEffect(() => {
@@ -146,6 +150,14 @@ export default function Home() {
   const onRefresh = () => {
     setRefreshing(true);
     loadTurnLists();
+  };
+
+  const handleOpenCreateModal = () => {
+    if (!isPremium && turnLists.length >= 1) {
+      setPaywallVisible(true);
+      return;
+    }
+    setModalVisible(true);
   };
 
   const handleCreateList = async () => {
@@ -266,7 +278,7 @@ export default function Home() {
           </Text>
           <TouchableOpacity
             style={styles.emptyButton}
-            onPress={() => setModalVisible(true)}
+            onPress={handleOpenCreateModal}
             activeOpacity={0.8}
           >
             <LinearGradient
@@ -296,6 +308,12 @@ export default function Home() {
           />
         </View>
       )}
+
+      <PaywallModal
+        visible={paywallVisible}
+        onClose={() => setPaywallVisible(false)}
+        feature="multiple_lists"
+      />
 
       <Modal
         visible={modalVisible}
@@ -365,7 +383,7 @@ export default function Home() {
 
       <TouchableOpacity
         style={styles.floatingButton}
-        onPress={() => setModalVisible(true)}
+        onPress={handleOpenCreateModal}
         activeOpacity={0.9}
       >
         <LinearGradient

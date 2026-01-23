@@ -12,6 +12,8 @@ import {
 import * as ImagePicker from 'expo-image-picker';
 import { Camera, Image as ImageIcon } from 'lucide-react-native';
 import { supabase } from '@/lib/supabase';
+import { useSubscription } from '@/contexts/SubscriptionContext';
+import { PaywallModal } from './PaywallModal';
 
 interface MemberImagePickerProps {
   currentPhotoUrl?: string | null;
@@ -25,6 +27,8 @@ export function MemberImagePicker({
   size = 80,
 }: MemberImagePickerProps) {
   const [uploading, setUploading] = useState(false);
+  const [paywallVisible, setPaywallVisible] = useState(false);
+  const { isPremium } = useSubscription();
 
   const requestPermissions = async () => {
     if (Platform.OS !== 'web') {
@@ -80,6 +84,11 @@ export function MemberImagePicker({
   };
 
   const pickImage = async () => {
+    if (!isPremium) {
+      setPaywallVisible(true);
+      return;
+    }
+
     const hasPermission = await requestPermissions();
     if (!hasPermission) return;
 
@@ -122,27 +131,35 @@ export function MemberImagePicker({
   };
 
   return (
-    <TouchableOpacity
-      style={[styles.container, { width: size, height: size }]}
-      onPress={pickImage}
-      disabled={uploading}
-    >
-      {uploading ? (
-        <View style={[styles.placeholder, { borderRadius: size / 2 }]}>
-          <ActivityIndicator size="small" color="#007AFF" />
-        </View>
-      ) : currentPhotoUrl ? (
-        <Image
-          source={{ uri: currentPhotoUrl }}
-          style={[styles.image, { borderRadius: size / 2 }]}
-        />
-      ) : (
-        <View style={[styles.placeholder, { borderRadius: size / 2 }]}>
-          <ImageIcon size={size * 0.4} color="#999" />
-          <Text style={styles.placeholderText}>Add Photo</Text>
-        </View>
-      )}
-    </TouchableOpacity>
+    <>
+      <TouchableOpacity
+        style={[styles.container, { width: size, height: size }]}
+        onPress={pickImage}
+        disabled={uploading}
+      >
+        {uploading ? (
+          <View style={[styles.placeholder, { borderRadius: size / 2 }]}>
+            <ActivityIndicator size="small" color="#007AFF" />
+          </View>
+        ) : currentPhotoUrl ? (
+          <Image
+            source={{ uri: currentPhotoUrl }}
+            style={[styles.image, { borderRadius: size / 2 }]}
+          />
+        ) : (
+          <View style={[styles.placeholder, { borderRadius: size / 2 }]}>
+            <ImageIcon size={size * 0.4} color="#999" />
+            <Text style={styles.placeholderText}>Add Photo</Text>
+          </View>
+        )}
+      </TouchableOpacity>
+
+      <PaywallModal
+        visible={paywallVisible}
+        onClose={() => setPaywallVisible(false)}
+        feature="photos"
+      />
+    </>
   );
 }
 
