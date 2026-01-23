@@ -1,26 +1,23 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext } from 'react';
+import { useRevenueCat } from './RevenueCatContext';
 
 interface SubscriptionContextType {
   isPremium: boolean;
   checkPremiumFeature: (feature: 'multiple_lists' | 'photos' | 'invites') => boolean;
-  setPremium: (value: boolean) => void;
+  isLoading: boolean;
 }
 
 const SubscriptionContext = createContext<SubscriptionContextType | undefined>(undefined);
 
 export function SubscriptionProvider({ children }: { children: React.ReactNode }) {
-  const [isPremium, setIsPremium] = useState(false);
+  const { isPremium, isLoading } = useRevenueCat();
 
   const checkPremiumFeature = (feature: 'multiple_lists' | 'photos' | 'invites') => {
     return isPremium;
   };
 
-  const setPremium = (value: boolean) => {
-    setIsPremium(value);
-  };
-
   return (
-    <SubscriptionContext.Provider value={{ isPremium, checkPremiumFeature, setPremium }}>
+    <SubscriptionContext.Provider value={{ isPremium, checkPremiumFeature, isLoading }}>
       {children}
     </SubscriptionContext.Provider>
   );

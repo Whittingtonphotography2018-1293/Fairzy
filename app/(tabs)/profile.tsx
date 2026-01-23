@@ -1,16 +1,20 @@
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator, Modal } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useAuth } from '@/contexts/AuthContext';
+import { useSubscription } from '@/contexts/SubscriptionContext';
 import { useRouter } from 'expo-router';
-import { LogOut, Mail, User as UserIcon, Shield, HelpCircle, MessageSquare, Trash2, AlertTriangle, X, Inbox } from 'lucide-react-native';
+import { LogOut, Mail, User as UserIcon, Shield, HelpCircle, MessageSquare, Trash2, AlertTriangle, X, Inbox, Crown } from 'lucide-react-native';
 import { supabase } from '@/lib/supabase';
 import { useState } from 'react';
+import { CustomerCenterModal } from '@/components/CustomerCenterModal';
 
 export default function Profile() {
   const { user, signOut } = useAuth();
+  const { isPremium } = useSubscription();
   const router = useRouter();
   const [deleting, setDeleting] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showCustomerCenter, setShowCustomerCenter] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
 
   const handleSignOut = async () => {
@@ -83,6 +87,27 @@ export default function Profile() {
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Account Actions</Text>
+
+          <TouchableOpacity
+            style={styles.premiumButton}
+            onPress={() => setShowCustomerCenter(true)}
+            activeOpacity={0.7}
+          >
+            <View style={styles.buttonContent}>
+              <View style={styles.premiumIconContainer}>
+                <Crown size={22} color="#FFB800" strokeWidth={2.2} />
+              </View>
+              <View style={styles.premiumTextContainer}>
+                <Text style={styles.premiumButtonText}>
+                  {isPremium ? 'Manage Subscription' : 'Upgrade to Premium'}
+                </Text>
+                {isPremium && (
+                  <Text style={styles.premiumBadgeText}>Active</Text>
+                )}
+              </View>
+            </View>
+          </TouchableOpacity>
+
           <TouchableOpacity
             style={styles.invitationsButton}
             onPress={() => router.push('/invitations')}
@@ -220,6 +245,11 @@ export default function Profile() {
           </View>
         </View>
       </Modal>
+
+      <CustomerCenterModal
+        visible={showCustomerCenter}
+        onClose={() => setShowCustomerCenter(false)}
+      />
     </View>
   );
 }
@@ -339,6 +369,41 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     textTransform: 'uppercase',
     letterSpacing: 0.8,
+  },
+  premiumButton: {
+    backgroundColor: '#FFFBEB',
+    borderRadius: 14,
+    borderWidth: 2,
+    borderColor: '#FED7AA',
+    marginBottom: 12,
+  },
+  premiumIconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    backgroundColor: '#FFFFFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  premiumTextContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  premiumButtonText: {
+    fontSize: 17,
+    color: '#D97706',
+    fontWeight: '700',
+  },
+  premiumBadgeText: {
+    fontSize: 12,
+    color: '#10B981',
+    fontWeight: '700',
+    backgroundColor: '#D1FAE5',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 8,
   },
   invitationsButton: {
     backgroundColor: '#F5F3FF',

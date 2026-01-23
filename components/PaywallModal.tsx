@@ -1,13 +1,18 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
   Modal,
+  Platform,
+  ActivityIndicator,
+  Alert,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { X, Check, Crown, Image as ImageIcon, Mail, ListPlus } from 'lucide-react-native';
+import { useRevenueCat } from '@/contexts/RevenueCatContext';
+import { RevenueCatUI } from 'react-native-purchases-ui';
 
 interface PaywallModalProps {
   visible: boolean;
@@ -36,6 +41,74 @@ const featureConfig = {
 export function PaywallModal({ visible, onClose, feature = 'multiple_lists' }: PaywallModalProps) {
   const config = featureConfig[feature];
   const Icon = config.icon;
+  const { offerings, isPremium, restorePurchases } = useRevenueCat();
+  const [showNativePaywall, setShowNativePaywall] = useState(false);
+  const [restoring, setRestoring] = useState(false);
+
+  useEffect(() => {
+    if (isPremium && visible) {
+      onClose();
+    }
+  }, [isPremium, visible]);
+
+  const handleUpgrade = async () => {
+    if (Platform.OS === 'web') {
+      Alert.alert(
+        'Not Available on Web',
+        'Subscriptions are only available on iOS and Android. Please use the mobile app to subscribe.'
+      );
+      return;
+    }
+
+    if (!offerings) {
+      Alert.alert('Error', 'No subscription offerings available. Please try again later.');
+      return;
+    }
+
+    try {
+      setShowNativePaywall(true);
+      const paywallResult = await RevenueCatUI.presentPaywall({
+        offering: offerings,
+      });
+
+      if (paywallResult === RevenueCatUI.PAYWALL_RESULT.PURCHASED) {
+        Alert.alert('Success', 'Welcome to Fairzy Premium!');
+        onClose();
+      } else if (paywallResult === RevenueCatUI.PAYWALL_RESULT.RESTORED) {
+        Alert.alert('Success', 'Your subscription has been restored!');
+        onClose();
+      }
+    } catch (error: any) {
+      console.error('Error presenting paywall:', error);
+      Alert.alert('Error', 'Failed to load payment options. Please try again.');
+    } finally {
+      setShowNativePaywall(false);
+    }
+  };
+
+  const handleRestore = async () => {
+    if (Platform.OS === 'web') {
+      Alert.alert(
+        'Not Available on Web',
+        'Purchase restoration is only available on iOS and Android.'
+      );
+      return;
+    }
+
+    setRestoring(true);
+    const result = await restorePurchases();
+    setRestoring(false);
+
+    if (result.success) {
+      Alert.alert('Success', 'Your subscription has been restored!');
+      onClose();
+    } else {
+      Alert.alert(
+        'No Subscriptions Found',
+        result.error || 'No active subscriptions were found to restore.'
+      );
+    }
+  };
 
   return (
     <Modal
@@ -104,16 +177,36 @@ export function PaywallModal({ visible, onClose, feature = 'multiple_lists' }: P
 
           <TouchableOpacity
             style={styles.upgradeButton}
-            onPress={() => {}}
+            onPress={handleUpgrade}
             activeOpacity={0.8}
+            disabled={showNativePaywall}
           >
             <LinearGradient
               colors={['#FFD700', '#FFA500']}
               style={styles.upgradeButtonGradient}
             >
-              <Crown size={20} color="#FFFFFF" strokeWidth={2.5} />
-              <Text style={styles.upgradeButtonText}>Upgrade to Premium</Text>
+              {showNativePaywall ? (
+                <ActivityIndicator color="#FFFFFF" />
+              ) : (
+                <>
+                  <Crown size={20} color="#FFFFFF" strokeWidth={2.5} />
+                  <Text style={styles.upgradeButtonText}>Upgrade to Premium</Text>
+                </>
+              )}
             </LinearGradient>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.restoreButton}
+            onPress={handleRestore}
+            activeOpacity={0.7}
+            disabled={restoring}
+          >
+            {restoring ? (
+              <ActivityIndicator color="#007AFF" size="small" />
+            ) : (
+              <Text style={styles.restoreButtonText}>Restore Purchases</Text>
+            )}
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -124,9 +217,11 @@ export function PaywallModal({ visible, onClose, feature = 'multiple_lists' }: P
             <Text style={styles.cancelButtonText}>Maybe Later</Text>
           </TouchableOpacity>
 
-          <Text style={styles.note}>
-            RevenueCat integration ready. Export to local environment to complete setup.
-          </Text>
+          {Platform.OS === 'web' && (
+            <Text style={styles.note}>
+              Subscriptions are available on iOS and Android apps only.
+            </Text>
+          )}
         </View>
       </View>
     </Modal>
@@ -287,6 +382,17 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     letterSpacing: 0.3,
   },
+  restoreButton: {
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    marginBottom: 8,
+  },
+  restoreButtonText: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#007AFF',
+    textAlign: 'center',
+  },
   cancelButton: {
     paddingVertical: 12,
     paddingHorizontal: 24,
@@ -295,6 +401,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '600',
     color: '#64748B',
+    textAlign: 'center',
   },
   note: {
     fontSize: 11,
