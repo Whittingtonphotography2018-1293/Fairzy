@@ -1,9 +1,9 @@
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator, Modal } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator, Modal, Platform, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import { useRouter } from 'expo-router';
-import { LogOut, Mail, User as UserIcon, Shield, HelpCircle, MessageSquare, Trash2, AlertTriangle, X, Inbox, Crown } from 'lucide-react-native';
+import { LogOut, Mail, User as UserIcon, Shield, HelpCircle, MessageSquare, Trash2, AlertTriangle, X, Inbox, Crown, RefreshCw } from 'lucide-react-native';
 import { supabase } from '@/lib/supabase';
 import { useState } from 'react';
 import { CustomerCenterModal } from '@/components/CustomerCenterModal';
@@ -47,6 +47,23 @@ export default function Profile() {
       setDeleteError(error.message || 'Failed to delete account. Please try again or contact support.');
     } finally {
       setDeleting(false);
+    }
+  };
+
+  const handleResetDemoPremium = () => {
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('fairzy_demo_premium');
+      Alert.alert(
+        'Demo Reset',
+        'Demo premium status cleared. Refresh the page to see changes.',
+        [
+          {
+            text: 'Refresh Now',
+            onPress: () => window.location.reload(),
+          },
+          { text: 'Later', style: 'cancel' },
+        ]
+      );
     }
   };
 
@@ -187,6 +204,16 @@ export default function Profile() {
         <View style={styles.footer}>
           <Text style={styles.footerText}>Fairzy v1.0</Text>
           <Text style={styles.footerSubtext}>Track turns with elegance</Text>
+          {Platform.OS === 'web' && (
+            <TouchableOpacity
+              style={styles.demoResetButton}
+              onPress={handleResetDemoPremium}
+              activeOpacity={0.7}
+            >
+              <RefreshCw size={16} color="#3B82F6" strokeWidth={2} />
+              <Text style={styles.demoResetText}>Reset Demo Premium</Text>
+            </TouchableOpacity>
+          )}
         </View>
       </ScrollView>
 
@@ -543,6 +570,23 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: '#CBD5E1',
     fontWeight: '500',
+  },
+  demoResetButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    backgroundColor: '#EFF6FF',
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 12,
+    marginTop: 16,
+    borderWidth: 1,
+    borderColor: '#DBEAFE',
+  },
+  demoResetText: {
+    fontSize: 14,
+    color: '#3B82F6',
+    fontWeight: '600',
   },
   modalOverlay: {
     flex: 1,

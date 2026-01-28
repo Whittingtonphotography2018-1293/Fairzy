@@ -54,8 +54,34 @@ export function PaywallModal({ visible, onClose, feature = 'multiple_lists' }: P
   const handleUpgrade = async () => {
     if (Platform.OS === 'web') {
       Alert.alert(
-        'Not Available on Web',
-        'Subscriptions are only available on iOS and Android. Please export this project and build it locally with EAS to test in-app purchases.\n\nRun: npx expo install expo-dev-client && eas build --profile development --platform ios'
+        'Demo Mode - Web Preview',
+        'You\'re in web preview mode. On a real device, this would open the native payment sheet.\n\nWould you like to simulate a successful purchase for testing?',
+        [
+          {
+            text: 'Cancel',
+            style: 'cancel',
+          },
+          {
+            text: 'Simulate Purchase',
+            onPress: () => {
+              if (typeof window !== 'undefined') {
+                localStorage.setItem('fairzy_demo_premium', 'true');
+              }
+              Alert.alert(
+                'Success! (Demo)',
+                'Premium activated in demo mode. Refresh the page to reset.\n\nOn iOS/Android, this would process a real purchase through the App Store or Google Play.',
+                [
+                  {
+                    text: 'OK',
+                    onPress: () => {
+                      window.location.reload();
+                    },
+                  },
+                ]
+              );
+            },
+          },
+        ]
       );
       return;
     }
@@ -127,6 +153,12 @@ export function PaywallModal({ visible, onClose, feature = 'multiple_lists' }: P
     >
       <View style={styles.modalOverlay}>
         <View style={styles.modalContent}>
+          {Platform.OS === 'web' && (
+            <View style={styles.demoBanner}>
+              <Text style={styles.demoBannerText}>WEB DEMO MODE</Text>
+            </View>
+          )}
+
           <TouchableOpacity onPress={onClose} style={styles.closeButton}>
             <X size={24} color="#64748B" />
           </TouchableOpacity>
@@ -418,5 +450,22 @@ const styles = StyleSheet.create({
     marginTop: 16,
     fontWeight: '500',
     lineHeight: 16,
+  },
+  demoBanner: {
+    backgroundColor: '#3B82F6',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
+    marginHorizontal: -24,
+    marginTop: -32,
+    marginBottom: 24,
+    alignItems: 'center',
+  },
+  demoBannerText: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: '800',
+    letterSpacing: 1.5,
   },
 });

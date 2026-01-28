@@ -36,7 +36,12 @@ export function RevenueCatProvider({ children }: { children: React.ReactNode }) 
   const initializeRevenueCat = async () => {
     try {
       if (Platform.OS === 'web') {
-        console.log('RevenueCat not supported on web, using mock data');
+        console.log('[RevenueCat] Web platform detected - checking for demo premium status');
+        if (typeof window !== 'undefined') {
+          const demoPremium = localStorage.getItem('fairzy_demo_premium') === 'true';
+          setIsPremium(demoPremium);
+          console.log('[RevenueCat] Demo premium status:', demoPremium);
+        }
         setIsLoading(false);
         return;
       }
