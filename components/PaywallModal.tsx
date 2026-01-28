@@ -44,6 +44,7 @@ export function PaywallModal({ visible, onClose, feature = 'multiple_lists' }: P
   const { offerings, isPremium, restorePurchases } = useRevenueCat();
   const [showNativePaywall, setShowNativePaywall] = useState(false);
   const [restoring, setRestoring] = useState(false);
+  const [showWebConfirm, setShowWebConfirm] = useState(false);
 
   useEffect(() => {
     if (isPremium && visible) {
@@ -53,36 +54,7 @@ export function PaywallModal({ visible, onClose, feature = 'multiple_lists' }: P
 
   const handleUpgrade = async () => {
     if (Platform.OS === 'web') {
-      Alert.alert(
-        'Demo Mode - Web Preview',
-        'You\'re in web preview mode. On a real device, this would open the native payment sheet.\n\nWould you like to simulate a successful purchase for testing?',
-        [
-          {
-            text: 'Cancel',
-            style: 'cancel',
-          },
-          {
-            text: 'Simulate Purchase',
-            onPress: () => {
-              if (typeof window !== 'undefined') {
-                localStorage.setItem('fairzy_demo_premium', 'true');
-              }
-              Alert.alert(
-                'Success! (Demo)',
-                'Premium activated in demo mode. Refresh the page to reset.\n\nOn iOS/Android, this would process a real purchase through the App Store or Google Play.',
-                [
-                  {
-                    text: 'OK',
-                    onPress: () => {
-                      window.location.reload();
-                    },
-                  },
-                ]
-              );
-            },
-          },
-        ]
-      );
+      setShowWebConfirm(true);
       return;
     }
 
@@ -117,6 +89,13 @@ export function PaywallModal({ visible, onClose, feature = 'multiple_lists' }: P
       Alert.alert('Error', `Failed to load payment options: ${error.message || 'Unknown error'}`);
     } finally {
       setShowNativePaywall(false);
+    }
+  };
+
+  const handleSimulatePurchase = () => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('fairzy_demo_premium', 'true');
+      window.location.reload();
     }
   };
 
@@ -264,6 +243,36 @@ export function PaywallModal({ visible, onClose, feature = 'multiple_lists' }: P
           )}
         </View>
       </View>
+
+      {/* Web Demo Confirmation Modal */}
+      {Platform.OS === 'web' && showWebConfirm && (
+        <View style={styles.webConfirmOverlay}>
+          <View style={styles.webConfirmContent}>
+            <Text style={styles.webConfirmTitle}>Demo Mode - Web Preview</Text>
+            <Text style={styles.webConfirmMessage}>
+              You're in web preview mode. On a real device, this would open the native payment sheet.
+              {'\n\n'}
+              Would you like to simulate a successful purchase for testing?
+            </Text>
+            <View style={styles.webConfirmButtons}>
+              <TouchableOpacity
+                style={styles.webConfirmCancelButton}
+                onPress={() => setShowWebConfirm(false)}
+                activeOpacity={0.7}
+              >
+                <Text style={styles.webConfirmCancelText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.webConfirmPurchaseButton}
+                onPress={handleSimulatePurchase}
+                activeOpacity={0.7}
+              >
+                <Text style={styles.webConfirmPurchaseText}>Simulate Purchase</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      )}
     </Modal>
   );
 }
@@ -467,5 +476,72 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '800',
     letterSpacing: 1.5,
+  },
+  webConfirmOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  webConfirmContent: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
+    padding: 24,
+    width: '100%',
+    maxWidth: 350,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.3,
+    shadowRadius: 16,
+    elevation: 12,
+  },
+  webConfirmTitle: {
+    fontSize: 20,
+    fontWeight: '800',
+    color: '#0F172A',
+    marginBottom: 16,
+    textAlign: 'center',
+    letterSpacing: -0.3,
+  },
+  webConfirmMessage: {
+    fontSize: 15,
+    color: '#64748B',
+    lineHeight: 22,
+    marginBottom: 24,
+    textAlign: 'center',
+    fontWeight: '500',
+  },
+  webConfirmButtons: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  webConfirmCancelButton: {
+    flex: 1,
+    backgroundColor: '#F1F5F9',
+    paddingVertical: 14,
+    borderRadius: 12,
+    alignItems: 'center',
+  },
+  webConfirmCancelText: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#64748B',
+  },
+  webConfirmPurchaseButton: {
+    flex: 1,
+    backgroundColor: '#3B82F6',
+    paddingVertical: 14,
+    borderRadius: 12,
+    alignItems: 'center',
+  },
+  webConfirmPurchaseText: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#FFFFFF',
   },
 });
