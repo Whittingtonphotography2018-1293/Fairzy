@@ -55,21 +55,29 @@ export function PaywallModal({ visible, onClose, feature = 'multiple_lists' }: P
     if (Platform.OS === 'web') {
       Alert.alert(
         'Not Available on Web',
-        'Subscriptions are only available on iOS and Android. Please use the mobile app to subscribe.'
+        'Subscriptions are only available on iOS and Android. Please export this project and build it locally with EAS to test in-app purchases.\n\nRun: npx expo install expo-dev-client && eas build --profile development --platform ios'
       );
       return;
     }
 
+    console.log('[Paywall] handleUpgrade called, offerings:', offerings);
+
     if (!offerings) {
-      Alert.alert('Error', 'No subscription offerings available. Please try again later.');
+      Alert.alert(
+        'Setup Required',
+        'RevenueCat offerings not configured yet.\n\nSteps to fix:\n1. Create a Product in RevenueCat dashboard\n2. Create a Package in an Offering\n3. Make sure your Entitlement is named "Fairzy Pro"'
+      );
       return;
     }
 
     try {
+      console.log('[Paywall] Presenting paywall for offering:', offerings.identifier);
       setShowNativePaywall(true);
       const paywallResult = await RevenueCatUI.presentPaywall({
         offering: offerings,
       });
+
+      console.log('[Paywall] Result:', paywallResult);
 
       if (paywallResult === RevenueCatUI.PAYWALL_RESULT.PURCHASED) {
         Alert.alert('Success', 'Welcome to Fairzy Premium!');
@@ -79,8 +87,8 @@ export function PaywallModal({ visible, onClose, feature = 'multiple_lists' }: P
         onClose();
       }
     } catch (error: any) {
-      console.error('Error presenting paywall:', error);
-      Alert.alert('Error', 'Failed to load payment options. Please try again.');
+      console.error('[Paywall] Error presenting paywall:', error);
+      Alert.alert('Error', `Failed to load payment options: ${error.message || 'Unknown error'}`);
     } finally {
       setShowNativePaywall(false);
     }

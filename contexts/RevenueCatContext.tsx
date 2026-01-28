@@ -43,26 +43,39 @@ export function RevenueCatProvider({ children }: { children: React.ReactNode }) 
 
       Purchases.setLogLevel(LOG_LEVEL.DEBUG);
 
+      console.log('[RevenueCat] Configuring with API Key and user:', user?.id);
       await Purchases.configure({
         apiKey: REVENUECAT_API_KEY,
         appUserID: user?.id,
       });
 
+      console.log('[RevenueCat] Getting customer info...');
       const info = await Purchases.getCustomerInfo();
       setCustomerInfo(info);
       checkPremiumStatus(info);
+      console.log('[RevenueCat] Customer info loaded, isPremium:', typeof info.entitlements.active[ENTITLEMENT_ID] !== 'undefined');
 
+      console.log('[RevenueCat] Loading offerings...');
       const availableOfferings = await Purchases.getOfferings();
+      console.log('[RevenueCat] Offerings loaded:', {
+        current: availableOfferings.current?.identifier,
+        allOfferings: Object.keys(availableOfferings.all),
+      });
+
       if (availableOfferings.current) {
         setOfferings(availableOfferings.current);
+        console.log('[RevenueCat] Current offering set:', availableOfferings.current.identifier);
+      } else {
+        console.warn('[RevenueCat] No current offering found. Please configure offerings in RevenueCat dashboard.');
       }
 
       Purchases.addCustomerInfoUpdateListener((info) => {
+        console.log('[RevenueCat] Customer info updated');
         setCustomerInfo(info);
         checkPremiumStatus(info);
       });
     } catch (error) {
-      console.error('Error initializing RevenueCat:', error);
+      console.error('[RevenueCat] Error initializing:', error);
     } finally {
       setIsLoading(false);
     }
